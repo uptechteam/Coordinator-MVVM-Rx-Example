@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		8E0F66ED1F051D4B00B60D80 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F66EC1F051D4B00B60D80 /* AppDelegate.swift */; };
-		8E0F66EF1F051D4B00B60D80 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F66EE1F051D4B00B60D80 /* ViewController.swift */; };
 		8E0F66F21F051D4B00B60D80 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E0F66F01F051D4B00B60D80 /* Main.storyboard */; };
 		8E0F66F41F051D4B00B60D80 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E0F66F31F051D4B00B60D80 /* Assets.xcassets */; };
 		8E0F66F71F051D4B00B60D80 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E0F66F51F051D4B00B60D80 /* LaunchScreen.storyboard */; };
 		8E0F67021F051D4C00B60D80 /* Coordinators_MVVM_Rx_ExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F67011F051D4C00B60D80 /* Coordinators_MVVM_Rx_ExampleTests.swift */; };
+		8E3DD8191F051F2E00170C36 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD8181F051F2E00170C36 /* AppCoordinator.swift */; };
+		8E3DD81C1F051F4800170C36 /* BaseCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD81B1F051F4800170C36 /* BaseCoordinator.swift */; };
+		8E3DD81E1F05248100170C36 /* GithubService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD81D1F05248100170C36 /* GithubService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,7 +30,6 @@
 /* Begin PBXFileReference section */
 		8E0F66E91F051D4B00B60D80 /* Coordinators-MVVM-Rx Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Coordinators-MVVM-Rx Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E0F66EC1F051D4B00B60D80 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		8E0F66EE1F051D4B00B60D80 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		8E0F66F11F051D4B00B60D80 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8E0F66F31F051D4B00B60D80 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8E0F66F61F051D4B00B60D80 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -36,6 +37,9 @@
 		8E0F66FD1F051D4C00B60D80 /* Coordinators-MVVM-Rx ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Coordinators-MVVM-Rx ExampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E0F67011F051D4C00B60D80 /* Coordinators_MVVM_Rx_ExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinators_MVVM_Rx_ExampleTests.swift; sourceTree = "<group>"; };
 		8E0F67031F051D4C00B60D80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8E3DD8181F051F2E00170C36 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		8E3DD81B1F051F4800170C36 /* BaseCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCoordinator.swift; sourceTree = "<group>"; };
+		8E3DD81D1F05248100170C36 /* GithubService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,12 +81,11 @@
 		8E0F66EB1F051D4B00B60D80 /* Coordinators-MVVM-Rx Example */ = {
 			isa = PBXGroup;
 			children = (
-				8E0F66EC1F051D4B00B60D80 /* AppDelegate.swift */,
-				8E0F66EE1F051D4B00B60D80 /* ViewController.swift */,
-				8E0F66F01F051D4B00B60D80 /* Main.storyboard */,
-				8E0F66F31F051D4B00B60D80 /* Assets.xcassets */,
-				8E0F66F51F051D4B00B60D80 /* LaunchScreen.storyboard */,
-				8E0F66F81F051D4B00B60D80 /* Info.plist */,
+				8E3DD8171F051E4600170C36 /* App */,
+				8E3DD81A1F051F3900170C36 /* Library */,
+				8E3DD8151F051E1E00170C36 /* Networking */,
+				8E3DD8141F051E1600170C36 /* Classes */,
+				8E3DD8161F051E2F00170C36 /* Resources */,
 			);
 			path = "Coordinators-MVVM-Rx Example";
 			sourceTree = "<group>";
@@ -94,6 +97,49 @@
 				8E0F67031F051D4C00B60D80 /* Info.plist */,
 			);
 			path = "Coordinators-MVVM-Rx ExampleTests";
+			sourceTree = "<group>";
+		};
+		8E3DD8141F051E1600170C36 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		8E3DD8151F051E1E00170C36 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				8E3DD81D1F05248100170C36 /* GithubService.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		8E3DD8161F051E2F00170C36 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8E0F66F01F051D4B00B60D80 /* Main.storyboard */,
+				8E0F66F31F051D4B00B60D80 /* Assets.xcassets */,
+				8E0F66F51F051D4B00B60D80 /* LaunchScreen.storyboard */,
+				8E0F66F81F051D4B00B60D80 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		8E3DD8171F051E4600170C36 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				8E0F66EC1F051D4B00B60D80 /* AppDelegate.swift */,
+				8E3DD8181F051F2E00170C36 /* AppCoordinator.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		8E3DD81A1F051F3900170C36 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				8E3DD81B1F051F4800170C36 /* BaseCoordinator.swift */,
+			);
+			path = Library;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,7 +243,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E0F66EF1F051D4B00B60D80 /* ViewController.swift in Sources */,
+				8E3DD8191F051F2E00170C36 /* AppCoordinator.swift in Sources */,
+				8E3DD81C1F051F4800170C36 /* BaseCoordinator.swift in Sources */,
+				8E3DD81E1F05248100170C36 /* GithubService.swift in Sources */,
 				8E0F66ED1F051D4B00B60D80 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -227,6 +275,7 @@
 				8E0F66F11F051D4B00B60D80 /* Base */,
 			);
 			name = Main.storyboard;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		8E0F66F51F051D4B00B60D80 /* LaunchScreen.storyboard */ = {
@@ -235,6 +284,7 @@
 				8E0F66F61F051D4B00B60D80 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -348,7 +398,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = E6856DRNEB;
-				INFOPLIST_FILE = "Coordinators-MVVM-Rx Example/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Coordinators-MVVM-Rx Example/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -362,7 +412,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = E6856DRNEB;
-				INFOPLIST_FILE = "Coordinators-MVVM-Rx Example/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/Coordinators-MVVM-Rx Example/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -422,6 +472,7 @@
 				8E0F67081F051D4C00B60D80 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		8E0F67091F051D4C00B60D80 /* Build configuration list for PBXNativeTarget "Coordinators-MVVM-Rx ExampleTests" */ = {
 			isa = XCConfigurationList;
@@ -430,6 +481,7 @@
 				8E0F670B1F051D4C00B60D80 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
