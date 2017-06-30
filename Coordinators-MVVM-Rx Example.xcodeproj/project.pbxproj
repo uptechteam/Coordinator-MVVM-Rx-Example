@@ -15,6 +15,14 @@
 		8E3DD8191F051F2E00170C36 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD8181F051F2E00170C36 /* AppCoordinator.swift */; };
 		8E3DD81C1F051F4800170C36 /* BaseCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD81B1F051F4800170C36 /* BaseCoordinator.swift */; };
 		8E3DD81E1F05248100170C36 /* GithubService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD81D1F05248100170C36 /* GithubService.swift */; };
+		8E3E73411F052BDA002CC5E6 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EF2F5761F052BA400E1CC44 /* RxCocoa.framework */; };
+		8E3E73431F052C03002CC5E6 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E3E73421F052BDB002CC5E6 /* RxSwift.framework */; };
+		8E3E73471F052D48002CC5E6 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E73461F052D48002CC5E6 /* Repository.swift */; };
+		8E3E734A1F053927002CC5E6 /* RepositoryListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E73491F053927002CC5E6 /* RepositoryListViewController.swift */; };
+		8E3E734C1F05398C002CC5E6 /* RepositoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E734B1F05398C002CC5E6 /* RepositoryViewModel.swift */; };
+		8E3E734E1F0539A7002CC5E6 /* RepositoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E734D1F0539A7002CC5E6 /* RepositoryCell.swift */; };
+		8E3E73501F0539F6002CC5E6 /* RepositoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E734F1F0539F6002CC5E6 /* RepositoryListViewModel.swift */; };
+		8E98C3511F065E5000FDDA45 /* RepositoryListCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E98C3501F065E5000FDDA45 /* RepositoryListCoordinator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +48,15 @@
 		8E3DD8181F051F2E00170C36 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		8E3DD81B1F051F4800170C36 /* BaseCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCoordinator.swift; sourceTree = "<group>"; };
 		8E3DD81D1F05248100170C36 /* GithubService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubService.swift; sourceTree = "<group>"; };
+		8E3E73421F052BDB002CC5E6 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
+		8E3E73461F052D48002CC5E6 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
+		8E3E73491F053927002CC5E6 /* RepositoryListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryListViewController.swift; sourceTree = "<group>"; };
+		8E3E734B1F05398C002CC5E6 /* RepositoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryViewModel.swift; sourceTree = "<group>"; };
+		8E3E734D1F0539A7002CC5E6 /* RepositoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryCell.swift; sourceTree = "<group>"; };
+		8E3E734F1F0539F6002CC5E6 /* RepositoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryListViewModel.swift; sourceTree = "<group>"; };
+		8E98C3501F065E5000FDDA45 /* RepositoryListCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryListCoordinator.swift; sourceTree = "<group>"; };
+		8EF2F5761F052BA400E1CC44 /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
+		8EF2F5771F052BA400E1CC44 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E3E73431F052C03002CC5E6 /* RxSwift.framework in Frameworks */,
+				8E3E73411F052BDA002CC5E6 /* RxCocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +85,7 @@
 				8E0F66EB1F051D4B00B60D80 /* Coordinators-MVVM-Rx Example */,
 				8E0F67001F051D4C00B60D80 /* Coordinators-MVVM-Rx ExampleTests */,
 				8E0F66EA1F051D4B00B60D80 /* Products */,
+				8EF2F5751F052BA300E1CC44 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -83,6 +103,7 @@
 			children = (
 				8E3DD8171F051E4600170C36 /* App */,
 				8E3DD81A1F051F3900170C36 /* Library */,
+				8E3E73451F052D3D002CC5E6 /* Models */,
 				8E3DD8151F051E1E00170C36 /* Networking */,
 				8E3DD8141F051E1600170C36 /* Classes */,
 				8E3DD8161F051E2F00170C36 /* Resources */,
@@ -102,6 +123,7 @@
 		8E3DD8141F051E1600170C36 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				8E3E73481F053901002CC5E6 /* RepositoryList */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -142,6 +164,36 @@
 			path = Library;
 			sourceTree = "<group>";
 		};
+		8E3E73451F052D3D002CC5E6 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8E3E73461F052D48002CC5E6 /* Repository.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		8E3E73481F053901002CC5E6 /* RepositoryList */ = {
+			isa = PBXGroup;
+			children = (
+				8E98C3501F065E5000FDDA45 /* RepositoryListCoordinator.swift */,
+				8E3E73491F053927002CC5E6 /* RepositoryListViewController.swift */,
+				8E3E734F1F0539F6002CC5E6 /* RepositoryListViewModel.swift */,
+				8E3E734B1F05398C002CC5E6 /* RepositoryViewModel.swift */,
+				8E3E734D1F0539A7002CC5E6 /* RepositoryCell.swift */,
+			);
+			path = RepositoryList;
+			sourceTree = "<group>";
+		};
+		8EF2F5751F052BA300E1CC44 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8E3E73421F052BDB002CC5E6 /* RxSwift.framework */,
+				8EF2F5771F052BA400E1CC44 /* RxBlocking.framework */,
+				8EF2F5761F052BA400E1CC44 /* RxCocoa.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -152,6 +204,7 @@
 				8E0F66E51F051D4B00B60D80 /* Sources */,
 				8E0F66E61F051D4B00B60D80 /* Frameworks */,
 				8E0F66E71F051D4B00B60D80 /* Resources */,
+				8E3E73441F052C09002CC5E6 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -238,15 +291,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		8E3E73441F052C09002CC5E6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		8E0F66E51F051D4B00B60D80 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E3E734C1F05398C002CC5E6 /* RepositoryViewModel.swift in Sources */,
 				8E3DD8191F051F2E00170C36 /* AppCoordinator.swift in Sources */,
+				8E98C3511F065E5000FDDA45 /* RepositoryListCoordinator.swift in Sources */,
 				8E3DD81C1F051F4800170C36 /* BaseCoordinator.swift in Sources */,
+				8E3E734A1F053927002CC5E6 /* RepositoryListViewController.swift in Sources */,
+				8E3E73471F052D48002CC5E6 /* Repository.swift in Sources */,
 				8E3DD81E1F05248100170C36 /* GithubService.swift in Sources */,
+				8E3E73501F0539F6002CC5E6 /* RepositoryListViewModel.swift in Sources */,
 				8E0F66ED1F051D4B00B60D80 /* AppDelegate.swift in Sources */,
+				8E3E734E1F0539A7002CC5E6 /* RepositoryCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,6 +475,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = E6856DRNEB;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/Coordinators-MVVM-Rx Example/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-Example";
@@ -412,6 +493,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = E6856DRNEB;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/Coordinators-MVVM-Rx Example/Resources/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-Example";
