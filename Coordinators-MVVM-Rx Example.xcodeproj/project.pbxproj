@@ -12,6 +12,9 @@
 		8E0F66F41F051D4B00B60D80 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E0F66F31F051D4B00B60D80 /* Assets.xcassets */; };
 		8E0F66F71F051D4B00B60D80 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8E0F66F51F051D4B00B60D80 /* LaunchScreen.storyboard */; };
 		8E0F67021F051D4C00B60D80 /* Coordinators_MVVM_Rx_ExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0F67011F051D4C00B60D80 /* Coordinators_MVVM_Rx_ExampleTests.swift */; };
+		8E30EACB1F06758C0062027E /* LanguageListCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E30EACA1F06758C0062027E /* LanguageListCoordinator.swift */; };
+		8E30EACD1F0686700062027E /* LanguageListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E30EACC1F0686700062027E /* LanguageListViewModel.swift */; };
+		8E30EACF1F0688C80062027E /* LanguageListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E30EACE1F0688C80062027E /* LanguageListViewController.swift */; };
 		8E3DD8191F051F2E00170C36 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD8181F051F2E00170C36 /* AppCoordinator.swift */; };
 		8E3DD81C1F051F4800170C36 /* BaseCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD81B1F051F4800170C36 /* BaseCoordinator.swift */; };
 		8E3DD81E1F05248100170C36 /* GithubService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD81D1F05248100170C36 /* GithubService.swift */; };
@@ -45,6 +48,9 @@
 		8E0F66FD1F051D4C00B60D80 /* Coordinators-MVVM-Rx ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Coordinators-MVVM-Rx ExampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8E0F67011F051D4C00B60D80 /* Coordinators_MVVM_Rx_ExampleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinators_MVVM_Rx_ExampleTests.swift; sourceTree = "<group>"; };
 		8E0F67031F051D4C00B60D80 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8E30EACA1F06758C0062027E /* LanguageListCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageListCoordinator.swift; sourceTree = "<group>"; };
+		8E30EACC1F0686700062027E /* LanguageListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageListViewModel.swift; sourceTree = "<group>"; };
+		8E30EACE1F0688C80062027E /* LanguageListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageListViewController.swift; sourceTree = "<group>"; };
 		8E3DD8181F051F2E00170C36 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		8E3DD81B1F051F4800170C36 /* BaseCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCoordinator.swift; sourceTree = "<group>"; };
 		8E3DD81D1F05248100170C36 /* GithubService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubService.swift; sourceTree = "<group>"; };
@@ -124,6 +130,7 @@
 			isa = PBXGroup;
 			children = (
 				8E3E73481F053901002CC5E6 /* RepositoryList */,
+				8E98C3521F0670D100FDDA45 /* Languages */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -182,6 +189,16 @@
 				8E3E734D1F0539A7002CC5E6 /* RepositoryCell.swift */,
 			);
 			path = RepositoryList;
+			sourceTree = "<group>";
+		};
+		8E98C3521F0670D100FDDA45 /* Languages */ = {
+			isa = PBXGroup;
+			children = (
+				8E30EACA1F06758C0062027E /* LanguageListCoordinator.swift */,
+				8E30EACC1F0686700062027E /* LanguageListViewModel.swift */,
+				8E30EACE1F0688C80062027E /* LanguageListViewController.swift */,
+			);
+			path = Languages;
 			sourceTree = "<group>";
 		};
 		8EF2F5751F052BA300E1CC44 /* Frameworks */ = {
@@ -315,6 +332,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8E3E734C1F05398C002CC5E6 /* RepositoryViewModel.swift in Sources */,
+				8E30EACF1F0688C80062027E /* LanguageListViewController.swift in Sources */,
+				8E30EACD1F0686700062027E /* LanguageListViewModel.swift in Sources */,
+				8E30EACB1F06758C0062027E /* LanguageListCoordinator.swift in Sources */,
 				8E3DD8191F051F2E00170C36 /* AppCoordinator.swift in Sources */,
 				8E98C3511F065E5000FDDA45 /* RepositoryListCoordinator.swift in Sources */,
 				8E3DD81C1F051F4800170C36 /* BaseCoordinator.swift in Sources */,
@@ -480,6 +500,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Coordinators-MVVM-Rx Example/Resources/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -498,6 +519,7 @@
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Coordinators-MVVM-Rx Example/Resources/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";

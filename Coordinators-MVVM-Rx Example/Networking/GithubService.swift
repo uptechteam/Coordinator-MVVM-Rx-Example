@@ -18,8 +18,21 @@ class GithubService {
         self.session = session
     }
 
+    func getLanguageList() -> Observable<[String]> {
+        return Observable.just([
+            "Swift",
+            "Objective-C",
+            "Java",
+            "C",
+            "C++",
+            "Python",
+            "C#"
+            ])
+    }
+
     func getMostPopularRepositories(byLanguage language: String) -> Observable<[Repository]> {
-        let url = URL(string: "https://api.github.com/search/repositories?q=language:\(language)&sort=stars")!
+        let encodedLanguage = language.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
+        let url = URL(string: "https://api.github.com/search/repositories?q=language:\(encodedLanguage)&sort=stars")!
         return session.rx
             .json(url: url)
             .flatMap { json throws -> Observable<[Repository]> in

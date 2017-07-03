@@ -15,6 +15,7 @@ class RepositoryListViewController: UIViewController {
     var viewModel: RepositoryListViewModel!
 
     @IBOutlet private weak var tableView: UITableView!
+    private let chooseLanguageButton = UIBarButtonItem(barButtonSystemItem: .organize, target: nil, action: nil)
 
     private let disposeBag = DisposeBag()
 
@@ -26,6 +27,8 @@ class RepositoryListViewController: UIViewController {
     }
 
     private func setupUI() {
+        navigationItem.rightBarButtonItem = chooseLanguageButton
+
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = UITableViewAutomaticDimension
     }
@@ -44,8 +47,24 @@ class RepositoryListViewController: UIViewController {
             }
             .disposed(by: disposeBag)
 
+        viewModel.alert
+            .subscribe(onNext: { [weak self] alertMessage in
+                self?.presentAlert(message: alertMessage)
+            })
+            .disposed(by: disposeBag)
+
         tableView.rx.modelSelected(RepositoryViewModel.self)
             .bind(to: viewModel.selectRepository)
             .disposed(by: disposeBag)
+
+        chooseLanguageButton.rx.tap
+            .bind(to: viewModel.chooseLanguage)
+            .disposed(by: disposeBag)
+    }
+
+    private func presentAlert(message: String) {
+        let alertController = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alertController, animated: true)
     }
 }
