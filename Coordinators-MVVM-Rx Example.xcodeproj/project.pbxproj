@@ -147,8 +147,8 @@
 			isa = PBXGroup;
 			children = (
 				8E0F66F01F051D4B00B60D80 /* Main.storyboard */,
-				8E0F66F31F051D4B00B60D80 /* Assets.xcassets */,
 				8E0F66F51F051D4B00B60D80 /* LaunchScreen.storyboard */,
+				8E0F66F31F051D4B00B60D80 /* Assets.xcassets */,
 				8E0F66F81F051D4B00B60D80 /* Info.plist */,
 			);
 			path = Resources;
@@ -439,6 +439,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -486,6 +487,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -504,7 +506,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -523,7 +525,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -535,6 +537,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = E6856DRNEB;
 				INFOPLIST_FILE = "Coordinators-MVVM-Rx ExampleTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-ExampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -551,6 +554,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = E6856DRNEB;
 				INFOPLIST_FILE = "Coordinators-MVVM-Rx ExampleTests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.arthurmyronenko.Coordinators-MVVM-Rx-ExampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";

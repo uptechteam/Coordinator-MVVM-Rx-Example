@@ -30,7 +30,7 @@ class RepositoryListViewController: UIViewController {
         navigationItem.rightBarButtonItem = chooseLanguageButton
 
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.estimatedRowHeight = UITableViewAutomaticDimension
+        tableView.estimatedRowHeight = 100
     }
 
     private func setupBindings() {
