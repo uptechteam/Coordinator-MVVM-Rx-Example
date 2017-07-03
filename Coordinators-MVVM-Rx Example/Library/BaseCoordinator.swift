@@ -16,6 +16,7 @@ class BaseCoordinator<ResultType> {
     let disposeBag = DisposeBag()
 
     private let identifier = UUID()
+
     private var childCoordinators = [UUID: Any]()
 
     private func store<T>(coordinator: BaseCoordinator<T>) {
