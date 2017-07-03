@@ -7,6 +7,7 @@
 //
 
 import RxSwift
+import Foundation
 
 class BaseCoordinator<ResultType> {
 
@@ -14,11 +15,8 @@ class BaseCoordinator<ResultType> {
 
     let disposeBag = DisposeBag()
 
-    private var identifier: String {
-        return String(describing: type(of: self))
-    }
-
-    private var childCoordinators = [String: Any]()
+    private let identifier = UUID()
+    private var childCoordinators = [UUID: Any]()
 
     private func store<T>(coordinator: BaseCoordinator<T>) {
         childCoordinators[coordinator.identifier] = coordinator
