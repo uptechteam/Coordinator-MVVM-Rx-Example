@@ -34,15 +34,16 @@ class RepositoryListViewModel {
         let _alert = PublishSubject<String>()
         self.alert = _alert.asObservable()
 
-        self.repositories = _currentLanguage.asObservable()
-            .flatMapLatest {
-                githubService.getMostPopularRepositories(byLanguage: $0)
-                    .catchError { error in
-                        _alert.onNext(error.localizedDescription)
-                        return Observable.empty()
-                    }
-            }
-            .map { repositories in repositories.map(RepositoryViewModel.init) }
+//        self.repositories = _currentLanguage.asObservable()
+//            .flatMapLatest {
+//                githubService.getMostPopularRepositories(byLanguage: $0)
+//                    .catchError { error in
+//                        _alert.onNext(error.localizedDescription)
+//                        return Observable.empty()
+//                    }
+//            }
+//            .map { repositories in repositories.map(RepositoryViewModel.init) }
+        self.repositories = .empty()
 
         let _selectRepository = PublishSubject<RepositoryViewModel>()
         self.selectRepository = _selectRepository.asObserver()

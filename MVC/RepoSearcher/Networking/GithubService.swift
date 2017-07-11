@@ -10,6 +10,15 @@ import Foundation
 import RxSwift
 import RxCocoa
 
+enum Result<T> {
+    case error(Error)
+    case success(T)
+}
+
+enum ServiceError: Error {
+    case cannotParse
+}
+
 /// A service that knows how to perform requests for GitHub data.
 class GithubService {
 
@@ -19,10 +28,9 @@ class GithubService {
         self.session = session
     }
 
-    /// - Returns: a list of languages from GitHub.
-    func getLanguageList() -> Observable<[String]> {
+    func getLanguageList(completionHandler: (Result<[String]>) -> Void) {
         // For simplicity we will use a stubbed list of languages.
-        return Observable.just([
+        let stubbedListOfPopularLanguages = [
             "Swift",
             "Objective-C",
             "Java",
@@ -30,24 +38,35 @@ class GithubService {
             "C++",
             "Python",
             "C#"
-            ])
+        ]
+
+        completionHandler(.success(stubbedListOfPopularLanguages))
     }
 
-    /// - Parameter language: Language to filter by
-    /// - Returns: A list of most popular repositories filtered by langugage
-    func getMostPopularRepositories(byLanguage language: String) -> Observable<[Repository]> {
+    func getMostPopularRepositories(byLanguage language: String, completionHandler: @escaping (Result<[Repository]>) -> Void) {
         let encodedLanguage = language.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
         let url = URL(string: "https://api.github.com/search/repositories?q=language:\(encodedLanguage)&sort=stars")!
-        return session.rx
-            .json(url: url)
-            .flatMap { json throws -> Observable<[Repository]> in
+
+        session.dataTask(with: url) { (data, response, error) in
+            DispatchQueue.main.async {
+                if let error = error {
+                    completionHandler(.error(error))
+                    return
+                }
+
                 guard
-                    let json = json as? [String: Any],
-                    let itemsJSON = json["items"] as? [[String: Any]]
-                else { return Observable.error(NSError(domain: "Network Error", code: 1, userInfo: nil)) }
+                    let data = data,
+                    let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+                    let jsonDict = jsonObject as? [String: Any],
+                    let itemsJSON = jsonDict["items"] as? [[String: Any]]
+                else {
+                    completionHandler(.error(ServiceError.cannotParse))
+                    return
+                }
 
                 let repositories = itemsJSON.flatMap(Repository.init)
-                return Observable.just(repositories)
+                completionHandler(.success(repositories))
             }
+        }.resume()
     }
 }
