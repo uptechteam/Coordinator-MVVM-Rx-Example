@@ -15,8 +15,6 @@
 		8EB5F98D1F14D91100E46882 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB5F97C1F14D91100E46882 /* Repository.swift */; };
 		8EB5F98E1F14D91100E46882 /* GithubService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EB5F97E1F14D91100E46882 /* GithubService.swift */; };
 		8EB5F98F1F14D91100E46882 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8EB5F9801F14D91100E46882 /* Assets.xcassets */; };
-		8EB5F9941F14D97200E46882 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EB5F9921F14D97200E46882 /* RxCocoa.framework */; };
-		8EB5F9951F14D97200E46882 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EB5F9931F14D97200E46882 /* RxSwift.framework */; };
 		8EB5F99C1F14DB1E00E46882 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8EB5F9981F14DB1E00E46882 /* LaunchScreen.storyboard */; };
 		8EB5F99D1F14DB1E00E46882 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8EB5F99A1F14DB1E00E46882 /* Main.storyboard */; };
 /* End PBXBuildFile section */
@@ -55,8 +53,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8EB5F9941F14D97200E46882 /* RxCocoa.framework in Frameworks */,
-				8EB5F9951F14D97200E46882 /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,7 +186,6 @@
 				8EB5F9441F14D72500E46882 /* Sources */,
 				8EB5F9451F14D72500E46882 /* Frameworks */,
 				8EB5F9461F14D72500E46882 /* Resources */,
-				8EB5F9961F14DA6300E46882 /* Carthage Copy */,
 			);
 			buildRules = (
 			);
@@ -280,25 +275,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		8EB5F9961F14DA6300E46882 /* Carthage Copy */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../Carthage/Build/iOS/RxSwift.framework",
-				"$(SRCROOT)/../Carthage/Build/iOS/RxCocoa.framework",
-			);
-			name = "Carthage Copy";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8EB5F9441F14D72500E46882 /* Sources */ = {
@@ -456,7 +432,7 @@
 				CLANG_ANALYZER_LOCALIZABILITY_EMPTY_CONTEXT = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				DEVELOPMENT_TEAM = E6856DRNEB;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "$(SRCROOT)/RepoSearcher/Resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -473,7 +449,7 @@
 				CLANG_ANALYZER_LOCALIZABILITY_EMPTY_CONTEXT = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				DEVELOPMENT_TEAM = E6856DRNEB;
-				FRAMEWORK_SEARCH_PATHS = "$(PROJECT_DIR)/../Carthage/Build/iOS";
+				FRAMEWORK_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "$(SRCROOT)/RepoSearcher/Resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import RxSwift
-import RxCocoa
 import SafariServices
 
 class RepositoryListViewController: UIViewController {
