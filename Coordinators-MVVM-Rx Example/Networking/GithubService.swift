@@ -10,6 +10,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
+/// A service that knows how to perform requests for GitHub data.
 class GithubService {
 
     private let session: URLSession
@@ -18,7 +19,9 @@ class GithubService {
         self.session = session
     }
 
+    /// - Returns: a list of languages from GitHub.
     func getLanguageList() -> Observable<[String]> {
+        // For simplicity we will use a stubbed list of languages.
         return Observable.just([
             "Swift",
             "Objective-C",
@@ -30,6 +33,8 @@ class GithubService {
             ])
     }
 
+    /// - Parameter language: Language to filter by
+    /// - Returns: A list of most popular repositories filtered by langugage
     func getMostPopularRepositories(byLanguage language: String) -> Observable<[Repository]> {
         let encodedLanguage = language.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed)!
         let url = URL(string: "https://api.github.com/search/repositories?q=language:\(encodedLanguage)&sort=stars")!
