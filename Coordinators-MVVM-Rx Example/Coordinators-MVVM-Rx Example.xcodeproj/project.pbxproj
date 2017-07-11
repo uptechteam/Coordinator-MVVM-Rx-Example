@@ -18,14 +18,14 @@
 		8E3DD8191F051F2E00170C36 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD8181F051F2E00170C36 /* AppCoordinator.swift */; };
 		8E3DD81C1F051F4800170C36 /* BaseCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD81B1F051F4800170C36 /* BaseCoordinator.swift */; };
 		8E3DD81E1F05248100170C36 /* GithubService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3DD81D1F05248100170C36 /* GithubService.swift */; };
-		8E3E73411F052BDA002CC5E6 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EF2F5761F052BA400E1CC44 /* RxCocoa.framework */; };
-		8E3E73431F052C03002CC5E6 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E3E73421F052BDB002CC5E6 /* RxSwift.framework */; };
 		8E3E73471F052D48002CC5E6 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E73461F052D48002CC5E6 /* Repository.swift */; };
 		8E3E734A1F053927002CC5E6 /* RepositoryListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E73491F053927002CC5E6 /* RepositoryListViewController.swift */; };
 		8E3E734C1F05398C002CC5E6 /* RepositoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E734B1F05398C002CC5E6 /* RepositoryViewModel.swift */; };
 		8E3E734E1F0539A7002CC5E6 /* RepositoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E734D1F0539A7002CC5E6 /* RepositoryCell.swift */; };
 		8E3E73501F0539F6002CC5E6 /* RepositoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E3E734F1F0539F6002CC5E6 /* RepositoryListViewModel.swift */; };
 		8E98C3511F065E5000FDDA45 /* RepositoryListCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E98C3501F065E5000FDDA45 /* RepositoryListCoordinator.swift */; };
+		8EB5F93D1F14D59F00E46882 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EF2F5761F052BA400E1CC44 /* RxCocoa.framework */; };
+		8EB5F93E1F14D59F00E46882 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E3E73421F052BDB002CC5E6 /* RxSwift.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,15 +54,15 @@
 		8E3DD8181F051F2E00170C36 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		8E3DD81B1F051F4800170C36 /* BaseCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseCoordinator.swift; sourceTree = "<group>"; };
 		8E3DD81D1F05248100170C36 /* GithubService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubService.swift; sourceTree = "<group>"; };
-		8E3E73421F052BDB002CC5E6 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
+		8E3E73421F052BDB002CC5E6 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = ../Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
 		8E3E73461F052D48002CC5E6 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		8E3E73491F053927002CC5E6 /* RepositoryListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryListViewController.swift; sourceTree = "<group>"; };
 		8E3E734B1F05398C002CC5E6 /* RepositoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryViewModel.swift; sourceTree = "<group>"; };
 		8E3E734D1F0539A7002CC5E6 /* RepositoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryCell.swift; sourceTree = "<group>"; };
 		8E3E734F1F0539F6002CC5E6 /* RepositoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryListViewModel.swift; sourceTree = "<group>"; };
 		8E98C3501F065E5000FDDA45 /* RepositoryListCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryListCoordinator.swift; sourceTree = "<group>"; };
-		8EF2F5761F052BA400E1CC44 /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
-		8EF2F5771F052BA400E1CC44 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
+		8EF2F5761F052BA400E1CC44 /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = ../Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
+		8EF2F5771F052BA400E1CC44 /* RxBlocking.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxBlocking.framework; path = ../Carthage/Build/iOS/RxBlocking.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,8 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E3E73431F052C03002CC5E6 /* RxSwift.framework in Frameworks */,
-				8E3E73411F052BDA002CC5E6 /* RxCocoa.framework in Frameworks */,
+				8EB5F93D1F14D59F00E46882 /* RxCocoa.framework in Frameworks */,
+				8EB5F93E1F14D59F00E46882 /* RxSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -221,7 +221,7 @@
 				8E0F66E51F051D4B00B60D80 /* Sources */,
 				8E0F66E61F051D4B00B60D80 /* Frameworks */,
 				8E0F66E71F051D4B00B60D80 /* Resources */,
-				8E3E73441F052C09002CC5E6 /* ShellScript */,
+				8E3E73441F052C09002CC5E6 /* Copy Carthage */,
 			);
 			buildRules = (
 			);
@@ -309,15 +309,16 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		8E3E73441F052C09002CC5E6 /* ShellScript */ = {
+		8E3E73441F052C09002CC5E6 /* Copy Carthage */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/RxSwift.framework",
+				"$(SRCROOT)/../Carthage/Build/iOS/RxCocoa.framework",
 			);
+			name = "Copy Carthage";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -499,7 +500,7 @@
 				DEVELOPMENT_TEAM = E6856DRNEB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Coordinators-MVVM-Rx Example/Resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -518,7 +519,7 @@
 				DEVELOPMENT_TEAM = E6856DRNEB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Carthage/Build/iOS",
+					"$(PROJECT_DIR)/../Carthage/Build/iOS",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Coordinators-MVVM-Rx Example/Resources/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
