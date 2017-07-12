@@ -26,12 +26,12 @@ class RepositoryListViewModel {
     let showRepository: Observable<URL>
     let showLanguageList: Observable<Void>
 
-    init(githubService: GithubService = GithubService()) {
+    init(initialLanguage: String, githubService: GithubService = GithubService()) {
 
         let _reload = PublishSubject<Void>()
         self.reload = _reload.asObserver()
 
-        let _currentLanguage = BehaviorSubject<String>(value: "Swift")
+        let _currentLanguage = BehaviorSubject<String>(value: initialLanguage)
         self.setCurrentLanguage = _currentLanguage.asObserver()
 
         self.title = _currentLanguage.asObservable()

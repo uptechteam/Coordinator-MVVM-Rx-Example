@@ -27,3 +27,12 @@ extension Repository {
         self.init(fullName: fullName, description: description, starsCount: starsCount, url: url)
     }
 }
+
+extension Repository: Equatable {
+    static func == (lhs: Repository, rhs: Repository) -> Bool {
+        return lhs.fullName == rhs.fullName
+            && lhs.description == rhs.description
+            && lhs.starsCount == rhs.starsCount
+            && lhs.url == rhs.url
+    }
+}

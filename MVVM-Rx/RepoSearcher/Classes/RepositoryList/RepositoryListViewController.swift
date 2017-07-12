@@ -22,7 +22,7 @@ class RepositoryListViewController: UIViewController {
     private let chooseLanguageButton = UIBarButtonItem(barButtonSystemItem: .organize, target: nil, action: nil)
     private let refreshControl = UIRefreshControl()
 
-    private let viewModel = RepositoryListViewModel()
+    private let viewModel = RepositoryListViewModel(initialLanguage: "Swift")
     private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
