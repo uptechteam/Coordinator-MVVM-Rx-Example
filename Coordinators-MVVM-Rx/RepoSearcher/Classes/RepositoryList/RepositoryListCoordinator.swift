@@ -19,9 +19,8 @@ class RepositoryListCoordinator: BaseCoordinator<Void> {
     }
 
     override func start() -> Observable<Void> {
-        let viewModel = RepositoryListViewModel()
-        let viewController = UIStoryboard(name: "Main", bundle: Bundle.main)
-            .instantiateViewController(withIdentifier: "RepositoryListViewController") as! RepositoryListViewController
+        let viewModel = RepositoryListViewModel(initialLanguage: "Swift")
+        let viewController = RepositoryListViewController.initFromStoryboard(name: "Main")
         let navigationController = UINavigationController(rootViewController: viewController)
 
         viewController.viewModel = viewModel

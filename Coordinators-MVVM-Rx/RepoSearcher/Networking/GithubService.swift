@@ -10,6 +10,10 @@ import Foundation
 import RxSwift
 import RxCocoa
 
+enum ServiceError: Error {
+    case cannotParse
+}
+
 /// A service that knows how to perform requests for GitHub data.
 class GithubService {
 
@@ -44,7 +48,7 @@ class GithubService {
                 guard
                     let json = json as? [String: Any],
                     let itemsJSON = json["items"] as? [[String: Any]]
-                else { return Observable.error(NSError(domain: "Network Error", code: 1, userInfo: nil)) }
+                else { return Observable.error(ServiceError.cannotParse) }
 
                 let repositories = itemsJSON.flatMap(Repository.init)
                 return Observable.just(repositories)

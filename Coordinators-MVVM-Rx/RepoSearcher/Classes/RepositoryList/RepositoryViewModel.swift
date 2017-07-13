@@ -15,7 +15,7 @@ class RepositoryViewModel {
     let url: URL
 
     init(repository: Repository) {
-        self.name = "\(repository.fullName)"
+        self.name = repository.fullName
         self.description = repository.description
         self.starsCountText = "⭐️ \(repository.starsCount)"
         self.url = URL(string: repository.url)!

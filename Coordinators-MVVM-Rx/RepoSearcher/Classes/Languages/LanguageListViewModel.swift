@@ -2,7 +2,7 @@
 //  LanguageListViewModel.swift
 //  RepoSearcher
 //
-//  Created by Arthur Myronenko on 6/30/17.
+//  Created by Arthur Myronenko on 7/12/17.
 //  Copyright © 2017 UPTech Team. All rights reserved.
 //
 

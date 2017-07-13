@@ -82,6 +82,7 @@
                             <constraint firstItem="0Ac-Ly-dqm" firstAttribute="top" secondItem="R0O-Ge-tr6" secondAttribute="bottom" id="zxz-zY-zPl"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="mJ6-61-rcm"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" translucent="NO" prompted="NO"/>
                     <connections>
                         <outlet property="tableView" destination="0Ac-Ly-dqm" id="QbE-7n-pkP"/>
@@ -89,7 +90,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LBt-ws-xOq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="80.799999999999997" y="107.49625187406298"/>
+            <point key="canvasLocation" x="1020" y="107.49625187406298"/>
         </scene>
         <!--Language List View Controller-->
         <scene sceneID="OXz-rn-3qu">
@@ -135,13 +136,14 @@
                             <constraint firstItem="N4s-9l-tSv" firstAttribute="top" secondItem="YMC-yj-Nsb" secondAttribute="bottom" id="kQp-QS-O2e"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="Obw-7M-mhs"/>
                     <connections>
                         <outlet property="tableView" destination="YMC-yj-Nsb" id="yym-6m-bhg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ti7-ut-wSe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="853.60000000000002" y="107.49625187406298"/>
+            <point key="canvasLocation" x="1799" y="107"/>
         </scene>
     </scenes>
 </document>

@@ -9,14 +9,16 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import SafariServices
 
-class RepositoryListViewController: UIViewController {
-
-    var viewModel: RepositoryListViewModel!
+/// Shows a list of most starred repositories filtered by language.
+class RepositoryListViewController: UIViewController, StoryboardInitializable {
 
     @IBOutlet private weak var tableView: UITableView!
     private let chooseLanguageButton = UIBarButtonItem(barButtonSystemItem: .organize, target: nil, action: nil)
+    private let refreshControl = UIRefreshControl()
 
+    var viewModel: RepositoryListViewModel!
     private let disposeBag = DisposeBag()
 
     override func viewDidLoad() {
@@ -24,6 +26,8 @@ class RepositoryListViewController: UIViewController {
 
         setupUI()
         setupBindings()
+
+        refreshControl.sendActions(for: .valueChanged)
     }
 
     private func setupUI() {
@@ -31,35 +35,49 @@ class RepositoryListViewController: UIViewController {
 
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 100
+        tableView.insertSubview(refreshControl, at: 0)
     }
 
     private func setupBindings() {
+
+        // View Model outputs to the View Controller
+
+        viewModel.repositories
+            .observeOn(MainScheduler.instance)
+            .do(onNext: { [weak self] _ in self?.refreshControl.endRefreshing() })
+            .bind(to: tableView.rx.items(cellIdentifier: "RepositoryCell", cellType: RepositoryCell.self)) { [weak self] (_, repo, cell) in
+                self?.setupRepositoryCell(cell, repository: repo)
+            }
+            .disposed(by: disposeBag)
+
         viewModel.title
             .bind(to: navigationItem.rx.title)
             .disposed(by: disposeBag)
 
-        viewModel.repositories
-            .bind(to: tableView.rx.items(cellIdentifier: "RepositoryCell", cellType: RepositoryCell.self)) { (row, repo, cell) in
-                cell.selectionStyle = .none
-                cell.setName(repo.name)
-                cell.setDescription(repo.description)
-                cell.setStarsCountTest(repo.starsCountText)
-            }
+        viewModel.alertMessage
+            .subscribe(onNext: { [weak self] in self?.presentAlert(message: $0) })
             .disposed(by: disposeBag)
 
-        viewModel.alert
-            .subscribe(onNext: { [weak self] alertMessage in
-                self?.presentAlert(message: alertMessage)
-            })
-            .disposed(by: disposeBag)
+        // View Controller UI actions to the View Model
 
-        tableView.rx.modelSelected(RepositoryViewModel.self)
-            .bind(to: viewModel.selectRepository)
+        refreshControl.rx.controlEvent(.valueChanged)
+            .bind(to: viewModel.reload)
             .disposed(by: disposeBag)
 
         chooseLanguageButton.rx.tap
             .bind(to: viewModel.chooseLanguage)
             .disposed(by: disposeBag)
+
+        tableView.rx.modelSelected(RepositoryViewModel.self)
+            .bind(to: viewModel.selectRepository)
+            .disposed(by: disposeBag)
+    }
+
+    private func setupRepositoryCell(_ cell: RepositoryCell, repository: RepositoryViewModel) {
+        cell.selectionStyle = .none
+        cell.setName(repository.name)
+        cell.setDescription(repository.description)
+        cell.setStarsCountTest(repository.starsCountText)
     }
 
     private func presentAlert(message: String) {
