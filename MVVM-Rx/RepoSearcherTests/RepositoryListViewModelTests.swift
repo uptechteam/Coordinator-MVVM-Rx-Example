@@ -103,7 +103,10 @@ class RepositoryListViewModelTests: XCTestCase {
     }
 
     func test_SelectRepository_EmitsShowRepository() {
-        testScheduler.createHotObservable([next(300, RepositoryViewModel(repository: testRepository))])
+        let repositoryToSelect = RepositoryViewModel(repository: testRepository)
+        let selectRepositoryObservable = testScheduler.createHotObservable([next(300, repositoryToSelect)])
+
+        selectRepositoryObservable
             .bind(to: viewModel.selectRepository)
             .disposed(by: disposeBag)
 
