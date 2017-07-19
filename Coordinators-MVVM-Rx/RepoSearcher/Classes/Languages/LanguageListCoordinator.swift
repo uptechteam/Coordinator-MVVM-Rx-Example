@@ -9,6 +9,10 @@
 import UIKit
 import RxSwift
 
+/// Type that defines possible coordination results of the `LanguageListCoordinator`.
+///
+/// - language: Language was choosen.
+/// - cancel: Cancel button was tapped.
 enum LanguageListCoordinationResult {
     case language(String)
     case cancel
@@ -23,8 +27,7 @@ class LanguageListCoordinator: BaseCoordinator<LanguageListCoordinationResult> {
     }
 
     override func start() -> Observable<CoordinationResult> {
-        let viewController = UIStoryboard(name: "Main", bundle: Bundle.main)
-            .instantiateViewController(withIdentifier: "LanguageListViewController") as! LanguageListViewController
+        let viewController = LanguageListViewController.initFromStoryboard(name: "Main")
         let navigationController = UINavigationController(rootViewController: viewController)
 
         let viewModel = LanguageListViewModel()
