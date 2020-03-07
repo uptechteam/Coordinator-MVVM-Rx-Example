@@ -8,9 +8,7 @@
 
 #if os(iOS) || os(tvOS)
 
-#if !RX_NO_MODULE
 import RxSwift
-#endif
 import UIKit
 
 // Items
@@ -41,13 +39,13 @@ extension Reactive where Base: UITableView {
          .disposed(by: disposeBag)
 
      */
-    public func items<S: Sequence, O: ObservableType>
-        (_ source: O)
-        -> (_ cellFactory: @escaping (UITableView, Int, S.Iterator.Element) -> UITableViewCell)
+    public func items<Sequence: Swift.Sequence, Source: ObservableType>
+        (_ source: Source)
+        -> (_ cellFactory: @escaping (UITableView, Int, Sequence.Element) -> UITableViewCell)
         -> Disposable
-        where O.E == S {
+        where Source.Element == Sequence {
             return { cellFactory in
-                let dataSource = RxTableViewReactiveArrayDataSourceSequenceWrapper<S>(cellFactory: cellFactory)
+                let dataSource = RxTableViewReactiveArrayDataSourceSequenceWrapper<Sequence>(cellFactory: cellFactory)
                 return self.items(dataSource: dataSource)(source)
             }
     }
@@ -75,15 +73,15 @@ extension Reactive where Base: UITableView {
              }
              .disposed(by: disposeBag)
     */
-    public func items<S: Sequence, Cell: UITableViewCell, O : ObservableType>
+    public func items<Sequence: Swift.Sequence, Cell: UITableViewCell, Source: ObservableType>
         (cellIdentifier: String, cellType: Cell.Type = Cell.self)
-        -> (_ source: O)
-        -> (_ configureCell: @escaping (Int, S.Iterator.Element, Cell) -> Void)
+        -> (_ source: Source)
+        -> (_ configureCell: @escaping (Int, Sequence.Element, Cell) -> Void)
         -> Disposable
-        where O.E == S {
+        where Source.Element == Sequence {
         return { source in
             return { configureCell in
-                let dataSource = RxTableViewReactiveArrayDataSourceSequenceWrapper<S> { (tv, i, item) in
+                let dataSource = RxTableViewReactiveArrayDataSourceSequenceWrapper<Sequence> { tv, i, item in
                     let indexPath = IndexPath(item: i, section: 0)
                     let cell = tv.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! Cell
                     configureCell(i, item, cell)
@@ -105,46 +103,14 @@ extension Reactive where Base: UITableView {
     - parameter dataSource: Data source used to transform elements to view cells.
     - parameter source: Observable sequence of items.
     - returns: Disposable object that can be used to unbind.
-     
-     Example 
-
-        let dataSource = RxTableViewSectionedReloadDataSource<SectionModel<String, Double>>()
-
-        let items = Observable.just([
-            SectionModel(model: "First section", items: [
-                1.0,
-                2.0,
-                3.0
-                ]),
-            SectionModel(model: "Second section", items: [
-                1.0,
-                2.0,
-                3.0
-                ]),
-            SectionModel(model: "Third section", items: [
-                1.0,
-                2.0,
-                3.0
-                ])
-            ])
-
-        dataSource.configureCell = { (dataSource, tv, indexPath, element) in
-            let cell = tv.dequeueReusableCell(withIdentifier: "Cell")!
-            cell.textLabel?.text = "\(element) @ row \(indexPath.row)"
-            return cell
-        }
-
-        items
-            .bind(to: tableView.rx.items(dataSource: dataSource))
-            .disposed(by: disposeBag)
     */
     public func items<
             DataSource: RxTableViewDataSourceType & UITableViewDataSource,
-            O: ObservableType>
+            Source: ObservableType>
         (dataSource: DataSource)
-        -> (_ source: O)
+        -> (_ source: Source)
         -> Disposable
-        where DataSource.Element == O.E {
+        where DataSource.Element == Source.Element {
         return { source in
             // This is called for sideeffects only, and to make sure delegate proxy is in place when
             // data source is being bound.
@@ -154,7 +120,7 @@ extension Reactive where Base: UITableView {
             // Therefore it's better to set delegate proxy first, just to be sure.
             _ = self.delegate
             // Strong reference is needed because data source is in use until result subscription is disposed
-            return source.subscribeProxyDataSource(ofObject: self.base, dataSource: dataSource, retainDataSource: true) { [weak tableView = self.base] (_: RxTableViewDataSourceProxy, event) -> Void in
+            return source.subscribeProxyDataSource(ofObject: self.base, dataSource: dataSource as UITableViewDataSource, retainDataSource: true) { [weak tableView = self.base] (_: RxTableViewDataSourceProxy, event) -> Void in
                 guard let tableView = tableView else {
                     return
                 }
@@ -165,36 +131,14 @@ extension Reactive where Base: UITableView {
 
 }
 
-extension UITableView {
- 
-    /**
-    Factory method that enables subclasses to implement their own `delegate`.
-    
-    - returns: Instance of delegate proxy that wraps `delegate`.
-    */
-    public override func createRxDelegateProxy() -> RxScrollViewDelegateProxy {
-        return RxTableViewDelegateProxy(parentObject: self)
-    }
-
-    /**
-    Factory method that enables subclasses to implement their own `rx.dataSource`.
-    
-    - returns: Instance of delegate proxy that wraps `dataSource`.
-    */
-    public func createRxDataSourceProxy() -> RxTableViewDataSourceProxy {
-        return RxTableViewDataSourceProxy(parentObject: self)
-    }
-
-}
-
 extension Reactive where Base: UITableView {
     /**
     Reactive wrapper for `dataSource`.
     
     For more information take a look at `DelegateProxyType` protocol documentation.
     */
-    public var dataSource: DelegateProxy {
-        return RxTableViewDataSourceProxy.proxyForObject(base)
+    public var dataSource: DelegateProxy<UITableView, UITableViewDataSource> {
+        return RxTableViewDataSourceProxy.proxy(for: base)
     }
    
     /**
@@ -255,7 +199,7 @@ extension Reactive where Base: UITableView {
     public var itemInserted: ControlEvent<IndexPath> {
         let source = self.dataSource.methodInvoked(#selector(UITableViewDataSource.tableView(_:commit:forRowAt:)))
             .filter { a in
-                return UITableViewCellEditingStyle(rawValue: (try castOrThrow(NSNumber.self, a[1])).intValue) == .insert
+                return UITableViewCell.EditingStyle(rawValue: (try castOrThrow(NSNumber.self, a[1])).intValue) == .insert
             }
             .map { a in
                 return (try castOrThrow(IndexPath.self, a[2]))
@@ -270,7 +214,7 @@ extension Reactive where Base: UITableView {
     public var itemDeleted: ControlEvent<IndexPath> {
         let source = self.dataSource.methodInvoked(#selector(UITableViewDataSource.tableView(_:commit:forRowAt:)))
             .filter { a in
-                return UITableViewCellEditingStyle(rawValue: (try castOrThrow(NSNumber.self, a[1])).intValue) == .delete
+                return UITableViewCell.EditingStyle(rawValue: (try castOrThrow(NSNumber.self, a[1])).intValue) == .delete
             }
             .map { a in
                 return try castOrThrow(IndexPath.self, a[2])
@@ -360,6 +304,29 @@ extension Reactive where Base: UITableView {
 
         return ControlEvent(events: source)
     }
+    
+    /**
+     Reactive wrapper for `delegate` message `tableView:commitEditingStyle:forRowAtIndexPath:`.
+     
+     It can be only used when one of the `rx.itemsWith*` methods is used to bind observable sequence,
+     or any other data source conforming to `SectionedViewDataSourceType` protocol.
+     
+     ```
+        tableView.rx.modelDeleted(MyModel.self)
+            .map { ...
+     ```
+     */
+    public func modelDeleted<T>(_ modelType: T.Type) -> ControlEvent<T> {
+        let source: Observable<T> = self.itemDeleted.flatMap { [weak view = self.base as UITableView] indexPath -> Observable<T> in
+            guard let view = view else {
+                return Observable.empty()
+            }
+            
+            return Observable.just(try view.rx.model(at: indexPath))
+        }
+        
+        return ControlEvent(events: source)
+    }
 
     /**
      Synchronous helper method for retrieving a model at indexPath through a reactive data source.
@@ -373,6 +340,47 @@ extension Reactive where Base: UITableView {
     }
 }
 
+@available(iOS 10.0, tvOS 10.0, *)
+extension Reactive where Base: UITableView {
+
+    /// Reactive wrapper for `prefetchDataSource`.
+    ///
+    /// For more information take a look at `DelegateProxyType` protocol documentation.
+    public var prefetchDataSource: DelegateProxy<UITableView, UITableViewDataSourcePrefetching> {
+        return RxTableViewDataSourcePrefetchingProxy.proxy(for: base)
+    }
+
+    /**
+     Installs prefetch data source as forwarding delegate on `rx.prefetchDataSource`.
+     Prefetch data source won't be retained.
+
+     It enables using normal delegate mechanism with reactive delegate mechanism.
+
+     - parameter prefetchDataSource: Prefetch data source object.
+     - returns: Disposable object that can be used to unbind the data source.
+     */
+    public func setPrefetchDataSource(_ prefetchDataSource: UITableViewDataSourcePrefetching)
+        -> Disposable {
+            return RxTableViewDataSourcePrefetchingProxy.installForwardDelegate(prefetchDataSource, retainDelegate: false, onProxyForObject: self.base)
+    }
+
+    /// Reactive wrapper for `prefetchDataSource` message `tableView(_:prefetchRowsAt:)`.
+    public var prefetchRows: ControlEvent<[IndexPath]> {
+        let source = RxTableViewDataSourcePrefetchingProxy.proxy(for: base).prefetchRowsPublishSubject
+        return ControlEvent(events: source)
+    }
+
+    /// Reactive wrapper for `prefetchDataSource` message `tableView(_:cancelPrefetchingForRowsAt:)`.
+    public var cancelPrefetchingForRows: ControlEvent<[IndexPath]> {
+        let source = prefetchDataSource.methodInvoked(#selector(UITableViewDataSourcePrefetching.tableView(_:cancelPrefetchingForRowsAt:)))
+            .map { a in
+                return try castOrThrow(Array<IndexPath>.self, a[1])
+        }
+
+        return ControlEvent(events: source)
+    }
+
+}
 #endif
 
 #if os(tvOS)
@@ -382,11 +390,11 @@ extension Reactive where Base: UITableView {
         /**
          Reactive wrapper for `delegate` message `tableView:didUpdateFocusInContext:withAnimationCoordinator:`.
          */
-        public var didUpdateFocusInContextWithAnimationCoordinator: ControlEvent<(context: UIFocusUpdateContext, animationCoordinator: UIFocusAnimationCoordinator)> {
+        public var didUpdateFocusInContextWithAnimationCoordinator: ControlEvent<(context: UITableViewFocusUpdateContext, animationCoordinator: UIFocusAnimationCoordinator)> {
             
             let source = delegate.methodInvoked(#selector(UITableViewDelegate.tableView(_:didUpdateFocusIn:with:)))
-                .map { a -> (context: UIFocusUpdateContext, animationCoordinator: UIFocusAnimationCoordinator) in
-                    let context = a[1] as! UIFocusUpdateContext
+                .map { a -> (context: UITableViewFocusUpdateContext, animationCoordinator: UIFocusAnimationCoordinator) in
+                    let context = try castOrThrow(UITableViewFocusUpdateContext.self, a[1])
                     let animationCoordinator = try castOrThrow(UIFocusAnimationCoordinator.self, a[2])
                     return (context: context, animationCoordinator: animationCoordinator)
             }

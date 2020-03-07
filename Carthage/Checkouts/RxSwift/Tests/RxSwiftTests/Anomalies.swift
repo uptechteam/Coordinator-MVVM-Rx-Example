@@ -38,12 +38,12 @@ extension AnomaliesTest {
                         return share(Observable<Int>.interval(period, scheduler: scheduler))
                     }
 
-                    let _ = makeSequence(label: "main", period: 0.1)
+                    _ = makeSequence(label: "main", period: .milliseconds(100))
                         .flatMapLatest { (index: Int) -> Observable<(Int, Int)> in
-                            return makeSequence(label: "nested", period: 0.02).map { (index, $0) }
+                            return makeSequence(label: "nested", period: .milliseconds(20)).map { (index, $0) }
                         }
                         .take(10)
-                        .mapWithIndex { ($1, $0.0, $0.1) }
+                        .enumerated().map { ($0, $1.0, $1.1) }
                         .subscribe(
                             onNext: { _ in },
                             onCompleted: {
@@ -53,19 +53,73 @@ extension AnomaliesTest {
                 }
             }
 
-            waitForExpectations(timeout: 10.0) { (e) in
+            waitForExpectations(timeout: 10.0) { e in
                 XCTAssertNil(e)
             }
         }
 
         for op in [
-                { $0.shareReplay(1) },
+                { $0.share(replay: 1) },
                 { $0.replay(1).refCount() },
-                { $0.publish().refCount() },
-                { $0.shareReplayLatestWhileConnected() }
+                { $0.publish().refCount() }
             ] as [(Observable<Int>) -> Observable<Int>] {
             performSharingOperatorsTest(share: op)
         }
+    }
+
+    func test1323() {
+        func performSharingOperatorsTest(share: @escaping (Observable<Int>) -> Observable<Int>) {
+            _ = share(Observable<Int>.create({ observer in
+                    observer.on(.next(1))
+                    Thread.sleep(forTimeInterval: 0.1)
+                    observer.on(.completed)
+                    return Disposables.create()
+                })
+                .flatMap { int -> Observable<Int> in
+                    return Observable.create { observer -> Disposable in
+                        DispatchQueue.global().async {
+                            observer.onNext(int)
+                            observer.onCompleted()
+                        }
+                        return Disposables.create()
+                    }
+                })
+                .subscribe()
+        }
+
+        for op in [
+            { $0.share(replay: 0, scope: .whileConnected) },
+            { $0.share(replay: 0, scope: .forever) },
+            { $0.share(replay: 1, scope: .whileConnected) },
+            { $0.share(replay: 1, scope: .forever) },
+            { $0.share(replay: 2, scope: .whileConnected) },
+            { $0.share(replay: 2, scope: .forever) },
+            ] as [(Observable<Int>) -> Observable<Int>] {
+            performSharingOperatorsTest(share: op)
+        }
+    }
+
+    func test1344(){
+        let disposeBag = DisposeBag()
+        let foo = Observable<Int>.create({ observer in
+                observer.on(.next(1))
+                Thread.sleep(forTimeInterval: 0.1)
+                observer.on(.completed)
+                return Disposables.create()
+            })
+            .flatMap { int -> Observable<[Int]> in
+                return Observable.create { observer -> Disposable in
+                    DispatchQueue.global().async {
+                        observer.onNext([int])
+                    }
+                    self.sleep(0.1)
+                    return Disposables.create()
+                }
+            }
+
+        Observable.merge(foo, .just([42]))
+            .subscribe()
+            .disposed(by: disposeBag)
     }
 
     func testSeparationBetweenOnAndSubscriptionLocks() {
@@ -90,9 +144,9 @@ extension AnomaliesTest {
                         return share(Observable<Int>.interval(period, scheduler: scheduler))
                     }
 
-                    let _ = Observable.of(
-                            makeSequence(label: "main", period: 0.2),
-                            makeSequence(label: "nested", period: 0.3)
+                    _ = Observable.of(
+                            makeSequence(label: "main", period: .milliseconds(200)),
+                            makeSequence(label: "nested", period: .milliseconds(300))
                         ).merge()
                         .take(1)
                         .subscribe(
@@ -106,16 +160,18 @@ extension AnomaliesTest {
                 }
             }
 
-            waitForExpectations(timeout: 2.0) { (e) in
+            waitForExpectations(timeout: 2.0) { e in
                 XCTAssertNil(e)
             }
         }
 
         for op in [
-            { $0.shareReplay(1) },
-            { $0.replay(1).refCount() },
-            { $0.publish().refCount() },
-            { $0.shareReplayLatestWhileConnected() }
+            { $0.share(replay: 0, scope: .whileConnected) },
+            { $0.share(replay: 0, scope: .forever) },
+            { $0.share(replay: 1, scope: .whileConnected) },
+            { $0.share(replay: 1, scope: .forever) },
+            { $0.share(replay: 2, scope: .whileConnected) },
+            { $0.share(replay: 2, scope: .forever) },
             ] as [(Observable<Int>) -> Observable<Int>] {
             performSharingOperatorsTest(share: op)
         }

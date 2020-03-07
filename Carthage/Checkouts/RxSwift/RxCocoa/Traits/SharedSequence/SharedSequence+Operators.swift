@@ -6,9 +6,7 @@
 //  Copyright © 2015 Krunoslav Zaher. All rights reserved.
 //
 
-#if !RX_NO_MODULE
 import RxSwift
-#endif
 
 // MARK: map
 extension SharedSequenceConvertibleType {
@@ -19,11 +17,35 @@ extension SharedSequenceConvertibleType {
     - parameter selector: A transform function to apply to each source element.
     - returns: An observable sequence whose elements are the result of invoking the transform function on each element of source.
     */
-    public func map<R>(_ selector: @escaping (E) -> R) -> SharedSequence<SharingStrategy, R> {
+    public func map<Result>(_ selector: @escaping (Element) -> Result) -> SharedSequence<SharingStrategy, Result> {
         let source = self
             .asObservable()
             .map(selector)
-        return SharedSequence<SharingStrategy, R>(source)
+        return SharedSequence<SharingStrategy, Result>(source)
+    }
+}
+
+// MARK: compactMap
+extension SharedSequenceConvertibleType {
+    
+    /**
+     Projects each element of an observable sequence into an optional form and filters all optional results.
+     
+     Equivalent to:
+     
+     func compactMap<Result>(_ transform: @escaping (Self.E) -> Result?) -> SharedSequence<SharingStrategy, Result> {
+         return self.map(transform).filter { $0 != nil }.map { $0! }
+     }
+     
+     - parameter transform: A transform function to apply to each source element and which returns an element or nil.
+     - returns: An observable sequence whose elements are the result of filtering the transform function for each element of the source.
+     
+     */
+    public func compactMap<Result>(_ selector: @escaping (Element) -> Result?) -> SharedSequence<SharingStrategy, Result> {
+        let source = self
+            .asObservable()
+            .compactMap(selector)
+        return SharedSequence<SharingStrategy, Result>(source)
     }
 }
 
@@ -35,7 +57,7 @@ extension SharedSequenceConvertibleType {
     - parameter predicate: A function to test each source element for a condition.
     - returns: An observable sequence that contains elements from the input sequence that satisfy the condition.
     */
-    public func filter(_ predicate: @escaping (E) -> Bool) -> SharedSequence<SharingStrategy, E> {
+    public func filter(_ predicate: @escaping (Element) -> Bool) -> SharedSequence<SharingStrategy, Element> {
         let source = self
             .asObservable()
             .filter(predicate)
@@ -44,7 +66,7 @@ extension SharedSequenceConvertibleType {
 }
 
 // MARK: switchLatest
-extension SharedSequenceConvertibleType where E : SharedSequenceConvertibleType, E.SharingStrategy == SharingStrategy {
+extension SharedSequenceConvertibleType where Element : SharedSequenceConvertibleType {
     
     /**
     Transforms an observable sequence of observable sequences into an observable sequence
@@ -55,12 +77,12 @@ extension SharedSequenceConvertibleType where E : SharedSequenceConvertibleType,
     
     - returns: The observable sequence that at any point in time produces the elements of the most recent inner observable sequence that has been received.
     */
-    public func switchLatest() -> SharedSequence<SharingStrategy, E.E> {
-        let source: Observable<E.E> = self
+    public func switchLatest() -> SharedSequence<Element.SharingStrategy, Element.Element> {
+        let source: Observable<Element.Element> = self
             .asObservable()
             .map { $0.asSharedSequence() }
             .switchLatest()
-        return SharedSequence<SharingStrategy, E.E>(source)
+        return SharedSequence<Element.SharingStrategy, Element.Element>(source)
     }
 }
 
@@ -76,12 +98,12 @@ extension SharedSequenceConvertibleType {
      - returns: An observable sequence whose elements are the result of invoking the transform function on each element of source producing an
      Observable of Observable sequences and that at any point in time produces the elements of the most recent inner observable sequence that has been received.
      */
-    public func flatMapLatest<R>(_ selector: @escaping (E) -> SharedSequence<SharingStrategy, R>)
-        -> SharedSequence<SharingStrategy, R> {
-        let source: Observable<R> = self
+    public func flatMapLatest<Sharing, Result>(_ selector: @escaping (Element) -> SharedSequence<Sharing, Result>)
+        -> SharedSequence<Sharing, Result> {
+        let source: Observable<Result> = self
             .asObservable()
             .flatMapLatest(selector)
-        return SharedSequence<SharingStrategy, R>(source)
+        return SharedSequence<Sharing, Result>(source)
     }
 }
 
@@ -95,12 +117,12 @@ extension SharedSequenceConvertibleType {
      - parameter selector: A transform function to apply to element that was observed while no observable is executing in parallel.
      - returns: An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence that was received while no other sequence was being calculated.
      */
-    public func flatMapFirst<R>(_ selector: @escaping (E) -> SharedSequence<SharingStrategy, R>)
-        -> SharedSequence<SharingStrategy, R> {
-        let source: Observable<R> = self
+    public func flatMapFirst<Sharing, Result>(_ selector: @escaping (Element) -> SharedSequence<Sharing, Result>)
+        -> SharedSequence<Sharing, Result> {
+        let source: Observable<Result> = self
             .asObservable()
             .flatMapFirst(selector)
-        return SharedSequence<SharingStrategy, R>(source)
+        return SharedSequence<Sharing, Result>(source)
     }
 }
 
@@ -110,15 +132,18 @@ extension SharedSequenceConvertibleType {
      Invokes an action for each event in the observable sequence, and propagates all observer messages through the result sequence.
 
      - parameter onNext: Action to invoke for each element in the observable sequence.
+     - parameter afterNext: Action to invoke for each element after the observable has passed an onNext event along to its downstream.
      - parameter onCompleted: Action to invoke upon graceful termination of the observable sequence.
+     - parameter afterCompleted: Action to invoke after graceful termination of the observable sequence.
      - parameter onSubscribe: Action to invoke before subscribing to source observable sequence.
+     - parameter onSubscribed: Action to invoke after subscribing to source observable sequence.
      - parameter onDispose: Action to invoke after subscription to source observable has been disposed for any reason. It can be either because sequence terminates for some reason or observer subscription being disposed.
      - returns: The source sequence with the side-effecting behavior applied.
      */
-    public func `do`(onNext: ((E) -> Void)? = nil, onCompleted: (() -> Void)? = nil, onSubscribe: (() -> ())? = nil, onDispose: (() -> ())? = nil)
-        -> SharedSequence<SharingStrategy, E> {
+    public func `do`(onNext: ((Element) -> Void)? = nil, afterNext: ((Element) -> Void)? = nil, onCompleted: (() -> Void)? = nil, afterCompleted: (() -> Void)? = nil, onSubscribe: (() -> Void)? = nil, onSubscribed: (() -> Void)? = nil, onDispose: (() -> Void)? = nil)
+        -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
-            .do(onNext: onNext, onCompleted: onCompleted, onSubscribe: onSubscribe, onDispose: onDispose)
+            .do(onNext: onNext, afterNext: afterNext, onCompleted: onCompleted, afterCompleted: afterCompleted, onSubscribe: onSubscribe, onSubscribed: onSubscribed, onDispose: onDispose)
 
         return SharedSequence(source)
     }
@@ -133,7 +158,7 @@ extension SharedSequenceConvertibleType {
     - parameter identifier: Identifier that is printed together with event description to standard output.
     - returns: An observable sequence whose events are printed to standard output.
     */
-    public func debug(_ identifier: String? = nil, trimOutput: Bool = false, file: String = #file, line: UInt = #line, function: String = #function) -> SharedSequence<SharingStrategy, E> {
+    public func debug(_ identifier: String? = nil, trimOutput: Bool = false, file: String = #file, line: UInt = #line, function: String = #function) -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
             .debug(identifier, trimOutput: trimOutput, file: file, line: line, function: function)
         return SharedSequence(source)
@@ -141,7 +166,7 @@ extension SharedSequenceConvertibleType {
 }
 
 // MARK: distinctUntilChanged
-extension SharedSequenceConvertibleType where E: Equatable {
+extension SharedSequenceConvertibleType where Element: Equatable {
     
     /**
     Returns an observable sequence that contains only distinct contiguous elements according to equality operator.
@@ -149,7 +174,7 @@ extension SharedSequenceConvertibleType where E: Equatable {
     - returns: An observable sequence only containing the distinct contiguous elements, based on equality operator, from the source sequence.
     */
     public func distinctUntilChanged()
-        -> SharedSequence<SharingStrategy, E> {
+        -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
             .distinctUntilChanged({ $0 }, comparer: { ($0 == $1) })
             
@@ -165,7 +190,7 @@ extension SharedSequenceConvertibleType {
     - parameter keySelector: A function to compute the comparison key for each element.
     - returns: An observable sequence only containing the distinct contiguous elements, based on a computed key value, from the source sequence.
     */
-    public func distinctUntilChanged<K: Equatable>(_ keySelector: @escaping (E) -> K) -> SharedSequence<SharingStrategy, E> {
+    public func distinctUntilChanged<Key: Equatable>(_ keySelector: @escaping (Element) -> Key) -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
             .distinctUntilChanged(keySelector, comparer: { $0 == $1 })
         return SharedSequence(source)
@@ -177,10 +202,10 @@ extension SharedSequenceConvertibleType {
     - parameter comparer: Equality comparer for computed key values.
     - returns: An observable sequence only containing the distinct contiguous elements, based on `comparer`, from the source sequence.
     */
-    public func distinctUntilChanged(_ comparer: @escaping (E, E) -> Bool) -> SharedSequence<SharingStrategy, E> {
+    public func distinctUntilChanged(_ comparer: @escaping (Element, Element) -> Bool) -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
             .distinctUntilChanged({ $0 }, comparer: comparer)
-        return SharedSequence<SharingStrategy, E>(source)
+        return SharedSequence<SharingStrategy, Element>(source)
     }
     
     /**
@@ -190,10 +215,10 @@ extension SharedSequenceConvertibleType {
     - parameter comparer: Equality comparer for computed key values.
     - returns: An observable sequence only containing the distinct contiguous elements, based on a computed key value and the comparer, from the source sequence.
     */
-    public func distinctUntilChanged<K>(_ keySelector: @escaping (E) -> K, comparer: @escaping (K, K) -> Bool) -> SharedSequence<SharingStrategy, E> {
+    public func distinctUntilChanged<K>(_ keySelector: @escaping (Element) -> K, comparer: @escaping (K, K) -> Bool) -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
             .distinctUntilChanged(keySelector, comparer: comparer)
-        return SharedSequence<SharingStrategy, E>(source)
+        return SharedSequence<SharingStrategy, Element>(source)
     }
 }
 
@@ -207,7 +232,7 @@ extension SharedSequenceConvertibleType {
     - parameter selector: A transform function to apply to each element.
     - returns: An observable sequence whose elements are the result of invoking the one-to-many transform function on each element of the input sequence.
     */
-    public func flatMap<R>(_ selector: @escaping (E) -> SharedSequence<SharingStrategy, R>) -> SharedSequence<SharingStrategy, R> {
+    public func flatMap<Sharing, Result>(_ selector: @escaping (Element) -> SharedSequence<Sharing, Result>) -> SharedSequence<Sharing, Result> {
         let source = self.asObservable()
             .flatMap(selector)
         
@@ -225,10 +250,10 @@ extension SharedSequenceConvertibleType {
      - parameter sources: Collection of observable sequences to merge.
      - returns: The observable sequence that merges the elements of the observable sequences.
      */
-    public static func merge<C: Collection>(_ sources: C) -> SharedSequence<SharingStrategy, E>
-        where C.Iterator.Element == SharedSequence<SharingStrategy, E> {
+    public static func merge<Collection: Swift.Collection>(_ sources: Collection) -> SharedSequence<SharingStrategy, Element>
+        where Collection.Element == SharedSequence<SharingStrategy, Element> {
         let source = Observable.merge(sources.map { $0.asObservable() })
-        return SharedSequence<SharingStrategy, E>(source)
+        return SharedSequence<SharingStrategy, Element>(source)
     }
 
     /**
@@ -239,9 +264,9 @@ extension SharedSequenceConvertibleType {
      - parameter sources: Array of observable sequences to merge.
      - returns: The observable sequence that merges the elements of the observable sequences.
      */
-    public static func merge(_ sources: [SharedSequence<SharingStrategy, E>]) -> SharedSequence<SharingStrategy, E> {
+    public static func merge(_ sources: [SharedSequence<SharingStrategy, Element>]) -> SharedSequence<SharingStrategy, Element> {
         let source = Observable.merge(sources.map { $0.asObservable() })
-        return SharedSequence<SharingStrategy, E>(source)
+        return SharedSequence<SharingStrategy, Element>(source)
     }
 
     /**
@@ -252,25 +277,25 @@ extension SharedSequenceConvertibleType {
      - parameter sources: Collection of observable sequences to merge.
      - returns: The observable sequence that merges the elements of the observable sequences.
      */
-    public static func merge(_ sources: SharedSequence<SharingStrategy, E>...) -> SharedSequence<SharingStrategy, E> {
+    public static func merge(_ sources: SharedSequence<SharingStrategy, Element>...) -> SharedSequence<SharingStrategy, Element> {
         let source = Observable.merge(sources.map { $0.asObservable() })
-        return SharedSequence<SharingStrategy, E>(source)
+        return SharedSequence<SharingStrategy, Element>(source)
     }
     
 }
 
 // MARK: merge
-extension SharedSequenceConvertibleType where E : SharedSequenceConvertibleType, E.SharingStrategy == SharingStrategy {
+extension SharedSequenceConvertibleType where Element : SharedSequenceConvertibleType {
     /**
     Merges elements from all observable sequences in the given enumerable sequence into a single observable sequence.
     
     - returns: The observable sequence that merges the elements of the observable sequences.
     */
-    public func merge() -> SharedSequence<SharingStrategy, E.E> {
+    public func merge() -> SharedSequence<Element.SharingStrategy, Element.Element> {
         let source = self.asObservable()
             .map { $0.asSharedSequence() }
             .merge()
-        return SharedSequence<SharingStrategy, E.E>(source)
+        return SharedSequence<Element.SharingStrategy, Element.Element>(source)
     }
     
     /**
@@ -280,11 +305,11 @@ extension SharedSequenceConvertibleType where E : SharedSequenceConvertibleType,
     - returns: The observable sequence that merges the elements of the inner sequences.
     */
     public func merge(maxConcurrent: Int)
-        -> SharedSequence<SharingStrategy, E.E> {
+        -> SharedSequence<Element.SharingStrategy, Element.Element> {
         let source = self.asObservable()
             .map { $0.asSharedSequence() }
             .merge(maxConcurrent: maxConcurrent)
-        return SharedSequence<SharingStrategy, E.E>(source)
+        return SharedSequence<Element.SharingStrategy, Element.Element>(source)
     }
 }
 
@@ -303,7 +328,7 @@ extension SharedSequenceConvertibleType {
      - returns: The throttled sequence.
     */
     public func throttle(_ dueTime: RxTimeInterval, latest: Bool = true)
-        -> SharedSequence<SharingStrategy, E> {
+        -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
             .throttle(dueTime, latest: latest, scheduler: SharingStrategy.scheduler)
 
@@ -317,7 +342,7 @@ extension SharedSequenceConvertibleType {
     - returns: The throttled sequence.
     */
     public func debounce(_ dueTime: RxTimeInterval)
-        -> SharedSequence<SharingStrategy, E> {
+        -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
             .debounce(dueTime, scheduler: SharingStrategy.scheduler)
 
@@ -336,7 +361,7 @@ extension SharedSequenceConvertibleType {
     - parameter accumulator: An accumulator function to be invoked on each element.
     - returns: An observable sequence containing the accumulated values.
     */
-    public func scan<A>(_ seed: A, accumulator: @escaping (A, E) -> A)
+    public func scan<A>(_ seed: A, accumulator: @escaping (A, Element) -> A)
         -> SharedSequence<SharingStrategy, A> {
         let source = self.asObservable()
             .scan(seed, accumulator: accumulator)
@@ -352,8 +377,8 @@ extension SharedSequence {
 
      - returns: An observable sequence that contains the elements of each given sequence, in sequential order.
      */
-    public static func concat<S: Sequence>(_ sequence: S) -> SharedSequence<SharingStrategy, Element>
-        where S.Iterator.Element == SharedSequence<SharingStrategy, Element> {
+    public static func concat<Sequence: Swift.Sequence>(_ sequence: Sequence) -> SharedSequence<SharingStrategy, Element>
+        where Sequence.Element == SharedSequence<SharingStrategy, Element> {
             let source = Observable.concat(sequence.lazy.map { $0.asObservable() })
             return SharedSequence<SharingStrategy, Element>(source)
     }
@@ -363,8 +388,8 @@ extension SharedSequence {
 
      - returns: An observable sequence that contains the elements of each given sequence, in sequential order.
      */
-    public static func concat<C: Collection>(_ collection: C) -> SharedSequence<SharingStrategy, Element>
-        where C.Iterator.Element == SharedSequence<SharingStrategy, Element> {
+    public static func concat<Collection: Swift.Collection>(_ collection: Collection) -> SharedSequence<SharingStrategy, Element>
+        where Collection.Element == SharedSequence<SharingStrategy, Element> {
         let source = Observable.concat(collection.map { $0.asObservable() })
         return SharedSequence<SharingStrategy, Element>(source)
     }
@@ -379,10 +404,10 @@ extension SharedSequence {
      - parameter resultSelector: Function to invoke for each series of elements at corresponding indexes in the sources.
      - returns: An observable sequence containing the result of combining elements of the sources using the specified result selector function.
      */
-    public static func zip<C: Collection, R>(_ collection: C, _ resultSelector: @escaping ([Element]) throws -> R) -> SharedSequence<SharingStrategy, R>
-        where C.Iterator.Element == SharedSequence<SharingStrategy, Element> {
-        let source = Observable.zip(collection.map { $0.asSharedSequence().asObservable() }, resultSelector)
-        return SharedSequence<SharingStrategy, R>(source)
+    public static func zip<Collection: Swift.Collection, Result>(_ collection: Collection, resultSelector: @escaping ([Element]) throws -> Result) -> SharedSequence<SharingStrategy, Result>
+        where Collection.Element == SharedSequence<SharingStrategy, Element> {
+        let source = Observable.zip(collection.map { $0.asSharedSequence().asObservable() }, resultSelector: resultSelector)
+        return SharedSequence<SharingStrategy, Result>(source)
     }
 
     /**
@@ -390,8 +415,8 @@ extension SharedSequence {
 
      - returns: An observable sequence containing the result of combining elements of the sources.
      */
-    public static func zip<C: Collection>(_ collection: C) -> SharedSequence<SharingStrategy, [Element]>
-        where C.Iterator.Element == SharedSequence<SharingStrategy, Element> {
+    public static func zip<Collection: Swift.Collection>(_ collection: Collection) -> SharedSequence<SharingStrategy, [Element]>
+        where Collection.Element == SharedSequence<SharingStrategy, Element> {
             let source = Observable.zip(collection.map { $0.asSharedSequence().asObservable() })
             return SharedSequence<SharingStrategy, [Element]>(source)
     }
@@ -406,10 +431,10 @@ extension SharedSequence {
      - parameter resultSelector: Function to invoke whenever any of the sources produces an element.
      - returns: An observable sequence containing the result of combining elements of the sources using the specified result selector function.
      */
-    public static func combineLatest<C: Collection, R>(_ collection: C, _ resultSelector: @escaping ([Element]) throws -> R) -> SharedSequence<SharingStrategy, R>
-        where C.Iterator.Element == SharedSequence<SharingStrategy, Element> {
-        let source = Observable.combineLatest(collection.map { $0.asObservable() }, resultSelector)
-        return SharedSequence<SharingStrategy, R>(source)
+    public static func combineLatest<Collection: Swift.Collection, Result>(_ collection: Collection, resultSelector: @escaping ([Element]) throws -> Result) -> SharedSequence<SharingStrategy, Result>
+        where Collection.Element == SharedSequence<SharingStrategy, Element> {
+        let source = Observable.combineLatest(collection.map { $0.asObservable() }, resultSelector: resultSelector)
+        return SharedSequence<SharingStrategy, Result>(source)
     }
 
     /**
@@ -417,8 +442,8 @@ extension SharedSequence {
 
      - returns: An observable sequence containing the result of combining elements of the sources.
      */
-    public static func combineLatest<C: Collection>(_ collection: C) -> SharedSequence<SharingStrategy, [Element]>
-        where C.Iterator.Element == SharedSequence<SharingStrategy, Element> {
+    public static func combineLatest<Collection: Swift.Collection>(_ collection: Collection) -> SharedSequence<SharingStrategy, [Element]>
+        where Collection.Element == SharedSequence<SharingStrategy, Element> {
         let source = Observable.combineLatest(collection.map { $0.asObservable() })
         return SharedSequence<SharingStrategy, [Element]>(source)
     }
@@ -434,7 +459,7 @@ extension SharedSequenceConvertibleType {
     - parameter resultSelector: Function to invoke for each element from the self combined with the latest element from the second source, if any.
     - returns: An observable sequence containing the result of combining each element of the self  with the latest element from the second source, if any, using the specified result selector function.
     */
-    public func withLatestFrom<SecondO: SharedSequenceConvertibleType, ResultType>(_ second: SecondO, resultSelector: @escaping (E, SecondO.E) -> ResultType) -> SharedSequence<SharingStrategy, ResultType> where SecondO.SharingStrategy == SecondO.SharingStrategy {
+    public func withLatestFrom<SecondO: SharedSequenceConvertibleType, ResultType>(_ second: SecondO, resultSelector: @escaping (Element, SecondO.Element) -> ResultType) -> SharedSequence<SharingStrategy, ResultType> where SecondO.SharingStrategy == SharingStrategy {
         let source = self.asObservable()
             .withLatestFrom(second.asSharedSequence(), resultSelector: resultSelector)
 
@@ -442,16 +467,16 @@ extension SharedSequenceConvertibleType {
     }
 
     /**
-    Merges two observable sequences into one observable sequence by using latest element from the second sequence every time when `self` emitts an element.
+    Merges two observable sequences into one observable sequence by using latest element from the second sequence every time when `self` emits an element.
 
     - parameter second: Second observable source.
     - returns: An observable sequence containing the result of combining each element of the self  with the latest element from the second source, if any, using the specified result selector function.
     */
-    public func withLatestFrom<SecondO: SharedSequenceConvertibleType>(_ second: SecondO) -> SharedSequence<SharingStrategy, SecondO.E> {
+    public func withLatestFrom<SecondO: SharedSequenceConvertibleType>(_ second: SecondO) -> SharedSequence<SharingStrategy, SecondO.Element> {
         let source = self.asObservable()
             .withLatestFrom(second.asSharedSequence())
 
-        return SharedSequence<SharingStrategy, SecondO.E>(source)
+        return SharedSequence<SharingStrategy, SecondO.Element>(source)
     }
 }
 
@@ -467,7 +492,7 @@ extension SharedSequenceConvertibleType {
      - returns: An observable sequence that contains the elements that occur after the specified index in the input sequence.
      */
     public func skip(_ count: Int)
-        -> SharedSequence<SharingStrategy, E> {
+        -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
             .skip(count)
         return SharedSequence(source)
@@ -485,10 +510,31 @@ extension SharedSequenceConvertibleType {
     - parameter element: Element to prepend to the specified sequence.
     - returns: The source sequence prepended with the specified values.
     */
-    public func startWith(_ element: E)
-        -> SharedSequence<SharingStrategy, E> {
+    public func startWith(_ element: Element)
+        -> SharedSequence<SharingStrategy, Element> {
         let source = self.asObservable()
                 .startWith(element)
+
+        return SharedSequence(source)
+    }
+}
+
+// MARK: delay
+extension SharedSequenceConvertibleType {
+
+    /**
+     Returns an observable sequence by the source observable sequence shifted forward in time by a specified delay. Error events from the source observable sequence are not delayed.
+
+     - seealso: [delay operator on reactivex.io](http://reactivex.io/documentation/operators/delay.html)
+
+     - parameter dueTime: Relative time shift of the source by.
+     - parameter scheduler: Scheduler to run the subscription delay timer on.
+     - returns: the source Observable shifted in time by the specified delay.
+     */
+    public func delay(_ dueTime: RxTimeInterval)
+        -> SharedSequence<SharingStrategy, Element> {
+        let source = self.asObservable()
+            .delay(dueTime, scheduler: SharingStrategy.scheduler)
 
         return SharedSequence(source)
     }

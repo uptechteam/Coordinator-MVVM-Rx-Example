@@ -34,11 +34,11 @@ extension MainSchedulerTest {
     func testMainScheduler_basicScenario() {
 
         var messages = [Int]()
-        var executedImmediatelly = false
+        var executedImmediately = false
         _ = MainScheduler.instance.schedule(()) { s in
-            executedImmediatelly = true
+            executedImmediately = true
             messages.append(1)
-            _ = MainScheduler.instance.schedule(()) { s in
+            _ = MainScheduler.instance.schedule(()) { _ in
                 messages.append(3)
                 _ = MainScheduler.instance.schedule(()) {
                     messages.append(5)
@@ -51,7 +51,7 @@ extension MainSchedulerTest {
             return Disposables.create()
         }
 
-        XCTAssertTrue(executedImmediatelly)
+        XCTAssertTrue(executedImmediately)
 
         runRunLoop()
 
@@ -63,7 +63,7 @@ extension MainSchedulerTest {
         var messages = [Int]()
         _ = MainScheduler.instance.schedule(()) { s in
             messages.append(1)
-            let disposable = MainScheduler.instance.schedule(()) { s in
+            let disposable = MainScheduler.instance.schedule(()) { _ in
                 messages.append(3)
                 let disposable = MainScheduler.instance.schedule(()) {
                     messages.append(5)
@@ -87,7 +87,7 @@ extension MainSchedulerTest {
         var messages = [Int]()
         _ = MainScheduler.instance.schedule(()) { s in
             messages.append(1)
-            let disposable = MainScheduler.instance.schedule(()) { s in
+            let disposable = MainScheduler.instance.schedule(()) { _ in
                 messages.append(3)
                 let disposable = MainScheduler.instance.schedule(()) {
                     messages.append(5)

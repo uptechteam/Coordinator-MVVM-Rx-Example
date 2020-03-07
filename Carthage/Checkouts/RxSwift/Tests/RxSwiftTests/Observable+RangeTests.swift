@@ -22,8 +22,20 @@ extension ObservableRangeTest {
         }
 
         XCTAssertEqual(res.events, [
-            next(201, Int.max),
-            completed(202)
+            .next(201, Int.max),
+            .completed(202)
+            ])
+    }
+
+    func testRange_ZeroCount() {
+        let scheduler = TestScheduler(initialClock: 0)
+
+        let res = scheduler.start {
+            Observable.range(start: 0, count: 0, scheduler: scheduler)
+        }
+
+        XCTAssertEqual(res.events, [
+            .completed(201)
             ])
     }
 
@@ -35,9 +47,9 @@ extension ObservableRangeTest {
         }
 
         XCTAssertEqual(res.events, [
-            next(201, -10),
-            next(202, -9),
-            next(203, -8)
+            .next(201, -10),
+            .next(202, -9),
+            .next(203, -8)
             ])
     }
 

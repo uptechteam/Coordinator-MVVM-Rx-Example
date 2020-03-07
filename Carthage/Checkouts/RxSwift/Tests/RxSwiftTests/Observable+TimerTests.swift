@@ -20,13 +20,13 @@ extension ObservableTimerTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let res = scheduler.start {
-            Observable<Int>.timer(100, scheduler: scheduler)
+            Observable<Int>.timer(.seconds(100), scheduler: scheduler)
         }
 
-        let correct = [
-            next(300, 0 as Int),
-            completed(300)
-        ]
+        let correct = Recorded.events(
+            .next(300, 0),
+            .completed(300)
+        )
 
         XCTAssertEqual(res.events, correct)
     }
@@ -35,7 +35,7 @@ extension ObservableTimerTest {
     
         func testTimerReleasesResourcesOnComplete() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.timer(100, scheduler: scheduler).subscribe()
+            _ = Observable<Int>.timer(.seconds(100), scheduler: scheduler).subscribe()
             scheduler.start()
         }
 
@@ -49,18 +49,18 @@ extension ObservableTimerTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let res = scheduler.start {
-            Observable<Int64>.interval(100, scheduler: scheduler)
+            Observable<Int64>.interval(.seconds(100), scheduler: scheduler)
         }
 
-        let correct = [
-            next(300, 0 as Int64),
-            next(400, 1),
-            next(500, 2),
-            next(600, 3),
-            next(700, 4),
-            next(800, 5),
-            next(900, 6)
-        ]
+        let correct = Recorded.events(
+            .next(300, 0 as Int64),
+            .next(400, 1),
+            .next(500, 2),
+            .next(600, 3),
+            .next(700, 4),
+            .next(800, 5),
+            .next(900, 6)
+        )
 
         XCTAssertEqual(res.events, correct)
     }
@@ -69,20 +69,20 @@ extension ObservableTimerTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let res = scheduler.start(disposed: 210) {
-            Observable<Int64>.interval(0, scheduler: scheduler)
+            Observable<Int64>.interval(.seconds(0), scheduler: scheduler)
         }
 
-        let correct = [
-            next(201, 0 as Int64),
-            next(202, 1),
-            next(203, 2),
-            next(204, 3),
-            next(205, 4),
-            next(206, 5),
-            next(207, 6),
-            next(208, 7),
-            next(209, 8),
-        ]
+        let correct = Recorded.events(
+            .next(201, 0 as Int64),
+            .next(202, 1),
+            .next(203, 2),
+            .next(204, 3),
+            .next(205, 4),
+            .next(206, 5),
+            .next(207, 6),
+            .next(208, 7),
+            .next(209, 8)
+        )
 
         XCTAssertEqual(res.events, correct)
     }
@@ -94,7 +94,7 @@ extension ObservableTimerTest {
 
         let expectCompleted = expectation(description: "It will complete")
 
-        let d = Observable<Int64>.interval(0, scheduler: scheduler).takeWhile { $0 < 10 } .subscribe(onNext: { t in
+        let d = Observable<Int64>.interval(.seconds(0), scheduler: scheduler).takeWhile { $0 < 10 } .subscribe(onNext: { t in
             observer.on(.next(t))
         }, onCompleted: {
             expectCompleted.fulfill()
@@ -126,7 +126,7 @@ extension ObservableTimerTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let res = scheduler.start {
-            Observable<Int64>.interval(1000, scheduler: scheduler)
+            Observable<Int64>.interval(.seconds(1000), scheduler: scheduler)
         }
 
         let correct: [Recorded<Event<Int64>>] = [
@@ -142,14 +142,14 @@ extension ObservableTimerTest {
 
         let start = Date()
 
-        let a = try! Observable<Int64>.interval(1, scheduler: scheduler)
+        let a = try! Observable<Int64>.interval(.seconds(1), scheduler: scheduler)
             .take(2)
             .toBlocking()
             .toArray()
 
         let end = Date()
 
-        XCTAssertEqualWithAccuracy(2, end.timeIntervalSince(start), accuracy: 0.5)
+        XCTAssertEqual(2, end.timeIntervalSince(start), accuracy: 0.5)
         XCTAssertEqual(a, [0, 1])
     }
 

@@ -33,8 +33,8 @@ extension ObservableUsingTest {
                 _d = d
                 createInvoked += 1
                 xs = scheduler.createColdObservable([
-                    next(100, scheduler.clock),
-                    completed(200)
+                    .next(100, scheduler.clock),
+                    .completed(200)
                     ])
                 return xs.asObservable()
             }) as Observable<Int>
@@ -43,8 +43,8 @@ extension ObservableUsingTest {
         XCTAssert(disposable === _d)
 
         XCTAssertEqual(res.events, [
-            next(300, 200),
-            completed(400)
+            .next(300, 200),
+            .completed(400)
             ])
 
         XCTAssertEqual(1, createInvoked)
@@ -79,8 +79,8 @@ extension ObservableUsingTest {
                 _d = d
                 createInvoked += 1
                 xs = scheduler.createColdObservable([
-                    next(100, scheduler.clock),
-                    error(200, testError)
+                    .next(100, scheduler.clock),
+                    .error(200, testError)
                     ])
                 return xs.asObservable()
             }) as Observable<Int>
@@ -89,8 +89,8 @@ extension ObservableUsingTest {
         XCTAssert(disposable === _d)
 
         XCTAssertEqual(res.events, [
-            next(300, 200),
-            error(400, testError)
+            .next(300, 200),
+            .error(400, testError)
             ])
 
         XCTAssertEqual(1, createInvoked)
@@ -125,8 +125,8 @@ extension ObservableUsingTest {
                 _d = d
                 createInvoked += 1
                 xs = scheduler.createColdObservable([
-                    next(100, scheduler.clock),
-                    next(1000, scheduler.clock + 1)
+                    .next(100, scheduler.clock),
+                    .next(1000, scheduler.clock + 1)
                     ])
                 return xs.asObservable()
             }) as Observable<Int>
@@ -135,7 +135,7 @@ extension ObservableUsingTest {
         XCTAssert(disposable === _d)
 
         XCTAssertEqual(res.events, [
-            next(300, 200),
+            .next(300, 200),
             ])
 
         XCTAssertEqual(1, createInvoked)
@@ -161,7 +161,7 @@ extension ObservableUsingTest {
             Observable.using({ () -> MockDisposable in
                 disposeInvoked += 1
                 throw testError
-            }, observableFactory: { d in
+            }, observableFactory: { _ in
                 createInvoked += 1
                 return Observable.never()
 
@@ -169,7 +169,7 @@ extension ObservableUsingTest {
         }
 
         XCTAssertEqual(res.events, [
-            error(200, testError),
+            .error(200, testError),
             ])
 
         XCTAssertEqual(0, createInvoked)
@@ -188,7 +188,7 @@ extension ObservableUsingTest {
                 disposeInvoked += 1
                 disposable = MockDisposable(scheduler: scheduler)
                 return disposable
-            }, observableFactory: { d in
+            }, observableFactory: { _ in
                 createInvoked += 1
                 throw testError
 
@@ -196,7 +196,7 @@ extension ObservableUsingTest {
         }
 
         XCTAssertEqual(res.events, [
-            error(200, testError),
+            .error(200, testError),
             ])
 
         XCTAssertEqual(1, createInvoked)
@@ -211,12 +211,12 @@ extension ObservableUsingTest {
     #if TRACE_RESOURCES
         func testUsingReleasesResourcesOnComplete() {
             let compositeDisposable = CompositeDisposable(disposables: [])
-            _ = Observable<Int>.using({ _ in compositeDisposable} , observableFactory: { _ in Observable<Int>.just(1) }).subscribe()
+            _ = Observable<Int>.using({ compositeDisposable } , observableFactory: { _ in Observable<Int>.just(1) }).subscribe()
         }
 
         func testUsingReleasesResourcesOnError() {
             let compositeDisposable = CompositeDisposable(disposables: [])
-            _ = Observable<Int>.using({ _ in compositeDisposable} , observableFactory: { _ in Observable<Int>.error(testError) }).subscribe()
+            _ = Observable<Int>.using({ compositeDisposable } , observableFactory: { _ in Observable<Int>.error(testError) }).subscribe()
         }
     #endif
 }

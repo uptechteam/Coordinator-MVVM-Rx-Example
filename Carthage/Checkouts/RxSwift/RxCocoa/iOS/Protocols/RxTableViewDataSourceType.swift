@@ -9,9 +9,7 @@
 #if os(iOS) || os(tvOS)
 
 import UIKit
-#if !RX_NO_MODULE
 import RxSwift
-#endif
 
 /// Marks data source as `UITableView` reactive data source enabling it to be used with one of the `bindTo` methods.
 public protocol RxTableViewDataSourceType /*: UITableViewDataSource*/ {
@@ -23,7 +21,7 @@ public protocol RxTableViewDataSourceType /*: UITableViewDataSource*/ {
     ///
     /// - parameter tableView: Bound table view.
     /// - parameter observedEvent: Event
-    func tableView(_ tableView: UITableView, observedEvent: Event<Element>) -> Void
+    func tableView(_ tableView: UITableView, observedEvent: Event<Element>)
 }
 
 #endif

@@ -16,10 +16,16 @@ import class Foundation.NSObject
 import struct Foundation.Date
 
 func XCTAssertErrorEqual(_ lhs: Swift.Error, _ rhs: Swift.Error, file: StaticString = #file, line: UInt = #line) {
-    let event1: Event<Int> = .error(lhs)
-    let event2: Event<Int> = .error(rhs)
+    let lhsEvent: Event<Int> = .error(lhs)
+    let rhsEvent: Event<Int> = .error(rhs)
     
-    XCTAssertTrue(event1 == event2, file: file, line: line)
+    XCTAssertTrue(lhsEvent == rhsEvent, "expected \(rhsEvent) but received \(lhsEvent)", file: file, line: line)
+}
+
+func XCTAssertThrowsErrorEqual<T>(_ expression: @autoclosure () throws -> T, _ expectedError: Error, file: StaticString = #file, line: UInt = #line) {
+    XCTAssertThrowsError(try expression(), file: file, line: line) { actualError in
+        XCTAssertErrorEqual(actualError, expectedError, file: file, line: line)
+    }
 }
 
 func NSValuesAreEqual(_ lhs: Any, _ rhs: Any) -> Bool {
@@ -60,7 +66,7 @@ func XCTAssertEqualAnyObjectArrayOfArrays(_ lhs: [[Any]], _ rhs: [[Any]], file: 
 func XCTAssertEqual<T>(_ lhs: T, _ rhs: T, file: StaticString = #file, line: UInt = #line, _ comparison: (T, T) -> Bool) {
     let areEqual = comparison(lhs, rhs)
     XCTAssertTrue(areEqual, file: file, line: line)
-    if (!areEqual) {
+    if !areEqual {
         print(lhs)
         print(rhs)
     }
@@ -70,17 +76,17 @@ func XCTAssertArraysEqual<T>(_ lhs: [T], _ rhs: [T], file: StaticString = #file,
     XCTAssertEqual(lhs.count, rhs.count, file: file, line: line)
     let areEqual = zip(lhs, rhs).reduce(true) { (a: Bool, z: (T, T)) in a && comparison(z.0, z.1) }
     XCTAssertTrue(areEqual, file: file, line: line)
-    if (!areEqual || lhs.count != rhs.count) {
+    if !areEqual || lhs.count != rhs.count {
         print(lhs)
         print(rhs)
     }
 }
 
 
-func doOnBackgroundQueue(_ action: @escaping () -> ()) {
+func doOnBackgroundQueue(_ action: @escaping () -> Void) {
     DispatchQueue.global(qos: .default).async(execute: action)
 }
 
-func doOnMainQueue(_ action: @escaping () -> ()) {
+func doOnMainQueue(_ action: @escaping () -> Void) {
     DispatchQueue.main.async(execute: action)
 }

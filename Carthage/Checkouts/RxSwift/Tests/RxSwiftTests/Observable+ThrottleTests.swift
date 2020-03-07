@@ -20,25 +20,25 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 1),
-            next(210, 2),
-            next(250, 3),
-            next(310, 4),
-            next(350, 5),
-            next(410, 6),
-            next(450, 7),
-            completed(500)
+            .next(150, 1),
+            .next(210, 2),
+            .next(250, 3),
+            .next(310, 4),
+            .next(350, 5),
+            .next(410, 6),
+            .next(450, 7),
+            .completed(500)
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, latest: false, scheduler: scheduler)
+            xs.throttle(.seconds(200), latest: false, scheduler: scheduler)
         }
 
-        let correct = [
-            next(210, 2),
-            next(410, 6),
-            completed(500)
-        ]
+        let correct = Recorded.events(
+            .next(210, 2),
+            .next(410, 6),
+            .completed(500)
+        )
 
         XCTAssertEqual(res.events, correct)
 
@@ -53,12 +53,12 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 0),
+            .next(150, 0),
 
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, latest: false, scheduler: scheduler)
+            xs.throttle(.seconds(200), latest: false, scheduler: scheduler)
         }
 
         let correct: [Recorded<Event<Int>>] = [
@@ -77,16 +77,16 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 0),
-            completed(500)
+            .next(150, 0),
+            .completed(500)
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, latest: false, scheduler: scheduler)
+            xs.throttle(.seconds(200), latest: false, scheduler: scheduler)
         }
 
         let correct = [
-            completed(500, Int.self)
+            Recorded.completed(500, Int.self)
         ]
 
         XCTAssertEqual(res.events, correct)
@@ -102,24 +102,24 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 1),
-            next(210, 2),
-            next(250, 3),
-            next(310, 4),
-            next(350, 5),
-            error(410, testError),
-            next(450, 7),
-            completed(500)
+            .next(150, 1),
+            .next(210, 2),
+            .next(250, 3),
+            .next(310, 4),
+            .next(350, 5),
+            .error(410, testError),
+            .next(450, 7),
+            .completed(500)
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, latest: false, scheduler: scheduler)
+            xs.throttle(.seconds(200), latest: false, scheduler: scheduler)
         }
 
-        let correct = [
-            next(210, 2),
-            error(410, testError)
-        ]
+        let correct = Recorded.events(
+            .next(210, 2),
+            .error(410, testError)
+        )
 
         XCTAssertEqual(res.events, correct)
 
@@ -134,23 +134,23 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 1),
-            next(210, 2),
-            next(250, 3),
-            next(310, 4),
-            next(350, 5),
-            next(410, 6),
-            next(450, 7),
+            .next(150, 1),
+            .next(210, 2),
+            .next(250, 3),
+            .next(310, 4),
+            .next(350, 5),
+            .next(410, 6),
+            .next(450, 7),
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, latest: false, scheduler: scheduler)
+            xs.throttle(.seconds(200), latest: false, scheduler: scheduler)
         }
 
-        let correct = [
-            next(210, 2),
-            next(410, 6)
-        ]
+        let correct = Recorded.events(
+            .next(210, 2),
+            .next(410, 6)
+        )
 
         XCTAssertEqual(res.events, correct)
 
@@ -168,28 +168,27 @@ extension ObservableThrottleTest {
         let start = Date()
 
         let a = try! Observable.from([0, 1])
-            .throttle(2.0, latest: false, scheduler: scheduler)
+            .throttle(.seconds(2), latest: false, scheduler: scheduler)
             .toBlocking()
             .toArray()
 
         let end = Date()
 
-        XCTAssertEqualWithAccuracy(0.0, end.timeIntervalSince(start), accuracy: 0.5)
+        XCTAssertEqual(0.0, end.timeIntervalSince(start), accuracy: 0.5)
         XCTAssertEqual(a, [0])
         #endif
-
     }
 
     #if TRACE_RESOURCES
         func testThrottleNotLatestReleasesResourcesOnComplete() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.just(1).throttle(0.0, latest: false, scheduler: scheduler).subscribe()
+            _ = Observable<Int>.just(1).throttle(.seconds(0), latest: false, scheduler: scheduler).subscribe()
             scheduler.start()
         }
 
         func testThrottleNotLatestReleasesResourcesOnError() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.error(testError).throttle(0.0, latest: false, scheduler: scheduler).subscribe()
+            _ = Observable<Int>.error(testError).throttle(.seconds(0), latest: false, scheduler: scheduler).subscribe()
             scheduler.start()
         }
     #endif
@@ -202,26 +201,26 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 1),
-            next(210, 2),
-            next(250, 3),
-            next(310, 4),
-            next(350, 5),
-            next(410, 6),
-            next(450, 7),
-            completed(500)
+            .next(150, 1),
+            .next(210, 2),
+            .next(250, 3),
+            .next(310, 4),
+            .next(350, 5),
+            .next(410, 6),
+            .next(450, 7),
+            .completed(500)
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, scheduler: scheduler)
+            xs.throttle(.seconds(200), scheduler: scheduler)
         }
 
-        let correct = [
-            next(210, 2),
-            next(410, 6),
-            next(610, 7),
-            completed(610)
-        ]
+        let correct = Recorded.events(
+            .next(210, 2),
+            .next(410, 6),
+            .next(610, 7),
+            .completed(610)
+        )
 
         XCTAssertEqual(res.events, correct)
 
@@ -236,26 +235,26 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 1),
-            next(210, 2),
-            next(250, 3),
-            next(310, 4),
-            next(350, 5),
-            next(410, 6),
-            next(450, 7),
-            completed(900)
+            .next(150, 1),
+            .next(210, 2),
+            .next(250, 3),
+            .next(310, 4),
+            .next(350, 5),
+            .next(410, 6),
+            .next(450, 7),
+            .completed(900)
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, scheduler: scheduler)
+            xs.throttle(.seconds(200), scheduler: scheduler)
         }
 
-        let correct = [
-            next(210, 2),
-            next(410, 6),
-            next(610, 7),
-            completed(900)
-        ]
+        let correct = Recorded.events(
+            .next(210, 2),
+            .next(410, 6),
+            .next(610, 7),
+            .completed(900)
+        )
 
         XCTAssertEqual(res.events, correct)
 
@@ -270,12 +269,12 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 0),
+            .next(150, 0),
 
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, scheduler: scheduler)
+            xs.throttle(.seconds(200), scheduler: scheduler)
         }
 
         let correct: [Recorded<Event<Int>>] = [
@@ -294,16 +293,16 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 0),
-            completed(500)
+            .next(150, 0),
+            .completed(500)
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, scheduler: scheduler)
+            xs.throttle(.seconds(200), scheduler: scheduler)
         }
 
         let correct = [
-            completed(500, Int.self)
+            Recorded.completed(500, Int.self)
         ]
 
         XCTAssertEqual(res.events, correct)
@@ -319,24 +318,24 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 1),
-            next(210, 2),
-            next(250, 3),
-            next(310, 4),
-            next(350, 5),
-            error(410, testError),
-            next(450, 7),
-            completed(500)
+            .next(150, 1),
+            .next(210, 2),
+            .next(250, 3),
+            .next(310, 4),
+            .next(350, 5),
+            .error(410, testError),
+            .next(450, 7),
+            .completed(500)
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, scheduler: scheduler)
+            xs.throttle(.seconds(200), scheduler: scheduler)
         }
 
-        let correct = [
-            next(210, 2),
-            error(410, testError)
-        ]
+        let correct = Recorded.events(
+            .next(210, 2),
+            .error(410, testError)
+        )
 
         XCTAssertEqual(res.events, correct)
 
@@ -351,24 +350,24 @@ extension ObservableThrottleTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(150, 1),
-            next(210, 2),
-            next(250, 3),
-            next(310, 4),
-            next(350, 5),
-            next(410, 6),
-            next(450, 7),
+            .next(150, 1),
+            .next(210, 2),
+            .next(250, 3),
+            .next(310, 4),
+            .next(350, 5),
+            .next(410, 6),
+            .next(450, 7),
             ])
 
         let res = scheduler.start {
-            xs.throttle(200, scheduler: scheduler)
+            xs.throttle(.seconds(200), scheduler: scheduler)
         }
 
-        let correct = [
-            next(210, 2),
-            next(410, 6),
-            next(610, 7),
-        ]
+        let correct = Recorded.events(
+            .next(210, 2),
+            .next(410, 6),
+            .next(610, 7)
+        )
         
         XCTAssertEqual(res.events, correct)
         
@@ -379,32 +378,80 @@ extension ObservableThrottleTest {
         XCTAssertEqual(xs.subscriptions, subscriptions)
     }
     
-    func test_ThrottleTimeSpan_WithRealScheduler() {
+    func test_ThrottleTimeSpan_WithRealScheduler_seconds() {
         let scheduler = ConcurrentDispatchQueueScheduler(qos: .default)
 
         let start = Date()
 
         let a = try! Observable.from([0, 1])
-            .throttle(2.0, scheduler: scheduler)
+            .throttle(.seconds(2), scheduler: scheduler)
             .toBlocking()
             .toArray()
 
         let end = Date()
 
-        XCTAssertEqualWithAccuracy(2, end.timeIntervalSince(start), accuracy: 0.5)
+        XCTAssertEqual(2, end.timeIntervalSince(start), accuracy: 0.5)
+        XCTAssertEqual(a, [0, 1])
+    }
+    
+    func test_ThrottleTimeSpan_WithRealScheduler_milliseconds() {
+        let scheduler = ConcurrentDispatchQueueScheduler(qos: .default)
+        
+        let start = Date()
+        
+        let a = try! Observable.from([0, 1])
+            .throttle(.milliseconds(2_000), scheduler: scheduler)
+            .toBlocking()
+            .toArray()
+        
+        let end = Date()
+        
+        XCTAssertEqual(2, end.timeIntervalSince(start), accuracy: 0.5)
+        XCTAssertEqual(a, [0, 1])
+    }
+    
+    func test_ThrottleTimeSpan_WithRealScheduler_microseconds() {
+        let scheduler = ConcurrentDispatchQueueScheduler(qos: .default)
+        
+        let start = Date()
+        
+        let a = try! Observable.from([0, 1])
+            .throttle(.microseconds(2_000_000), scheduler: scheduler)
+            .toBlocking()
+            .toArray()
+        
+        let end = Date()
+        
+        XCTAssertEqual(2, end.timeIntervalSince(start), accuracy: 0.5)
+        XCTAssertEqual(a, [0, 1])
+    }
+    
+    func test_ThrottleTimeSpan_WithRealScheduler_nanoseconds() {
+        let scheduler = ConcurrentDispatchQueueScheduler(qos: .default)
+        
+        let start = Date()
+        
+        let a = try! Observable.from([0, 1])
+            .throttle(.nanoseconds(2_000_000_000), scheduler: scheduler)
+            .toBlocking()
+            .toArray()
+        
+        let end = Date()
+        
+        XCTAssertEqual(2, end.timeIntervalSince(start), accuracy: 0.5)
         XCTAssertEqual(a, [0, 1])
     }
 
     #if TRACE_RESOURCES
         func testThrottleLatestReleasesResourcesOnComplete() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.just(1).throttle(0.0, latest: true, scheduler: scheduler).subscribe()
+            _ = Observable<Int>.just(1).throttle(.seconds(0), latest: true, scheduler: scheduler).subscribe()
             scheduler.start()
         }
 
         func testThrottleLatestReleasesResourcesOnError() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.error(testError).throttle(0.0, latest: true, scheduler: scheduler).subscribe()
+            _ = Observable<Int>.error(testError).throttle(.seconds(0), latest: true, scheduler: scheduler).subscribe()
             scheduler.start()
         }
     #endif

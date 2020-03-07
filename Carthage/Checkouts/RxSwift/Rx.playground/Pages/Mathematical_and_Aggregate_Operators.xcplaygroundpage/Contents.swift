@@ -1,8 +1,8 @@
 /*:
  > # IMPORTANT: To use **Rx.playground**:
  1. Open **Rx.xcworkspace**.
- 1. Build the **RxSwift-macOS** scheme (**Product** → **Build**).
- 1. Open **Rx** playground in the **Project navigator**.
+ 1. Build the **RxExample-macOS** scheme (**Product** → **Build**).
+ 1. Open **Rx** playground in the **Project navigator** (under RxExample project).
  1. Show the Debug Area (**View** → **Debug Area** → **Show Debug Area**).
  ----
  [Previous](@previous) - [Table of Contents](Table_of_Contents)
@@ -49,9 +49,9 @@ example("concat") {
     let subject1 = BehaviorSubject(value: "🍎")
     let subject2 = BehaviorSubject(value: "🐶")
     
-    let variable = Variable(subject1)
+    let subjectsSubject = BehaviorSubject(value: subject1)
     
-    variable.asObservable()
+    subjectsSubject.asObservable()
         .concat()
         .subscribe { print($0) }
         .disposed(by: disposeBag)
@@ -59,7 +59,7 @@ example("concat") {
     subject1.onNext("🍐")
     subject1.onNext("🍊")
     
-    variable.value = subject2
+    subjectsSubject.onNext(subject2)
     
     subject2.onNext("I would be ignored")
     subject2.onNext("🐱")

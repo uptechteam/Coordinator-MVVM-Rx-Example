@@ -33,7 +33,7 @@ class RepositoryListViewController: UIViewController, StoryboardInitializable {
     private func setupUI() {
         navigationItem.rightBarButtonItem = chooseLanguageButton
 
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
         tableView.insertSubview(refreshControl, at: 0)
     }
@@ -45,8 +45,11 @@ class RepositoryListViewController: UIViewController, StoryboardInitializable {
         viewModel.repositories
             .observeOn(MainScheduler.instance)
             .do(onNext: { [weak self] _ in self?.refreshControl.endRefreshing() })
-            .bind(to: tableView.rx.items(cellIdentifier: "RepositoryCell", cellType: RepositoryCell.self)) { [weak self] (_, repo, cell) in
-                self?.setupRepositoryCell(cell, repository: repo)
+            .bind(to: tableView.rx.items(cellIdentifier: "RepositoryCell", cellType: RepositoryCell.self)) { _, repo, cell in
+                cell.selectionStyle = .none
+                cell.setName(repo.name)
+                cell.setDescription(repo.description)
+                cell.setStarsCountTest(repo.starsCountText)
             }
             .disposed(by: disposeBag)
 
@@ -71,13 +74,6 @@ class RepositoryListViewController: UIViewController, StoryboardInitializable {
         tableView.rx.modelSelected(RepositoryViewModel.self)
             .bind(to: viewModel.selectRepository)
             .disposed(by: disposeBag)
-    }
-
-    private func setupRepositoryCell(_ cell: RepositoryCell, repository: RepositoryViewModel) {
-        cell.selectionStyle = .none
-        cell.setName(repository.name)
-        cell.setDescription(repository.description)
-        cell.setStarsCountTest(repository.starsCountText)
     }
 
     private func presentAlert(message: String) {

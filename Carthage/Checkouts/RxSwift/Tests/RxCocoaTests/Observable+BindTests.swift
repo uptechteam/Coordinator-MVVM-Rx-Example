@@ -28,8 +28,33 @@ extension ObservableBindTest {
         _ = Observable.just(1).bind(to: observer)
 
         XCTAssertEqual(events, [
-            next(1),
-            completed()
+            .next(1),
+            .completed()
+            ])
+    }
+
+    func testBindToObservers() {
+        var events1: [Recorded<Event<Int>>] = []
+        var events2: [Recorded<Event<Int>>] = []
+
+        let observer1: AnyObserver<Int> = AnyObserver { event in
+            events1.append(Recorded(time: 0, value: event))
+        }
+
+        let observer2: AnyObserver<Int> = AnyObserver { event in
+            events2.append(Recorded(time: 0, value: event))
+        }
+
+        _ = Observable.just(1).bind(to: observer1, observer2)
+
+        XCTAssertEqual(events1, [
+            .next(1),
+            .completed()
+            ])
+
+        XCTAssertEqual(events2, [
+            .next(1),
+            .completed()
             ])
     }
 
@@ -49,6 +74,31 @@ extension ObservableBindTest {
         }
     }
 
+    func testBindToOptionalObservers() {
+        var events1: [Recorded<Event<Int?>>] = []
+        var events2: [Recorded<Event<Int?>>] = []
+
+        let observer1: AnyObserver<Int?> = AnyObserver { event in
+            events1.append(Recorded(time: 0, value: event))
+        }
+
+        let observer2: AnyObserver<Int?> = AnyObserver { event in
+            events2.append(Recorded(time: 0, value: event))
+        }
+
+        _ = (Observable.just(1) as Observable<Int>).bind(to: observer1, observer2)
+
+        XCTAssertEqual(events1, [
+            .next(1),
+            .completed()
+            ])
+
+        XCTAssertEqual(events2, [
+            .next(1),
+            .completed()
+            ])
+    }
+
     func testBindToOptionalObserverNoAmbiguity() {
         var events: [Recorded<Event<Int?>>] = []
 
@@ -63,34 +113,6 @@ extension ObservableBindTest {
             XCTFail("Not completed")
             return
         }
-    }
-}
-
-// MARK: bind(to:) variable
-
-extension ObservableBindTest {
-    func testBindToVariable() {
-        let variable = Variable<Int>(0)
-
-        _ = Observable.just(1).bind(to: variable)
-
-        XCTAssertEqual(variable.value, 1)
-    }
-
-    func testBindToOptionalVariable() {
-        let variable = Variable<Int?>(0)
-
-        _ = (Observable.just(1) as Observable<Int>).bind(to: variable)
-
-        XCTAssertEqual(variable.value, 1)
-    }
-
-    func testBindToVariableNoAmbiguity() {
-        let variable = Variable<Int?>(0)
-
-        _ = Observable.just(1).bind(to: variable)
-
-        XCTAssertEqual(variable.value, 1)
     }
 }
 
@@ -130,5 +152,4 @@ extension ObservableBindTest {
         XCTAssertEqual(result, 4)
         d.dispose()
     }
-
 }

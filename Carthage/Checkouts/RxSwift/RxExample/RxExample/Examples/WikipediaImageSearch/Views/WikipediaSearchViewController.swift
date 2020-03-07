@@ -7,10 +7,8 @@
 //
 
 import UIKit
-#if !RX_NO_MODULE
 import RxSwift
 import RxCocoa
-#endif
 
 class WikipediaSearchViewController: ViewController {
     @IBOutlet var searchBar: UISearchBar!
@@ -45,7 +43,7 @@ class WikipediaSearchViewController: ViewController {
 
         let results = searchBar.rx.text.orEmpty
             .asDriver()
-            .throttle(0.3)
+            .throttle(.milliseconds(300))
             .distinctUntilChanged()
             .flatMapLatest { query in
                 API.getSearchResults(query)

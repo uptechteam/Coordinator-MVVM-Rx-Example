@@ -18,21 +18,21 @@ extension ObservableWindowTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(205, 1),
-            next(210, 2),
-            next(240, 3),
-            next(280, 4),
-            next(320, 5),
-            next(350, 6),
-            next(370, 7),
-            next(420, 8),
-            next(470, 9),
-            completed(600)
+            .next(205, 1),
+            .next(210, 2),
+            .next(240, 3),
+            .next(280, 4),
+            .next(320, 5),
+            .next(350, 6),
+            .next(370, 7),
+            .next(420, 8),
+            .next(470, 9),
+            .completed(600)
             ])
         
         let res = scheduler.start { () -> Observable<String> in
-            let window: Observable<Observable<Int>> = xs.window(timeSpan: 70, count: 3, scheduler: scheduler)
-            let mappedWithIndex = window.mapWithIndex { (o: Observable<Int>, i: Int) -> Observable<String> in
+            let window: Observable<Observable<Int>> = xs.window(timeSpan: .seconds(70), count: 3, scheduler: scheduler)
+            let mappedWithIndex = window.enumerated().map { (i: Int, o: Observable<Int>) -> Observable<String> in
                 return o.map { (e: Int) -> String in
                     return "\(i) \(e)"
                 }
@@ -42,16 +42,16 @@ extension ObservableWindowTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(205, "0 1"),
-            next(210, "0 2"),
-            next(240, "0 3"),
-            next(280, "1 4"),
-            next(320, "2 5"),
-            next(350, "2 6"),
-            next(370, "2 7"),
-            next(420, "3 8"),
-            next(470, "4 9"),
-            completed(600)
+            .next(205, "0 1"),
+            .next(210, "0 2"),
+            .next(240, "0 3"),
+            .next(280, "1 4"),
+            .next(320, "2 5"),
+            .next(350, "2 6"),
+            .next(370, "2 7"),
+            .next(420, "3 8"),
+            .next(470, "4 9"),
+            .completed(600)
             ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -63,21 +63,21 @@ extension ObservableWindowTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(205, 1),
-            next(210, 2),
-            next(240, 3),
-            next(280, 4),
-            next(320, 5),
-            next(350, 6),
-            next(370, 7),
-            next(420, 8),
-            next(470, 9),
-            error(600, testError)
+            .next(205, 1),
+            .next(210, 2),
+            .next(240, 3),
+            .next(280, 4),
+            .next(320, 5),
+            .next(350, 6),
+            .next(370, 7),
+            .next(420, 8),
+            .next(470, 9),
+            .error(600, testError)
             ])
         
         let res = scheduler.start { () -> Observable<String> in
-            let window: Observable<Observable<Int>> = xs.window(timeSpan: 70, count: 3, scheduler: scheduler)
-            let mappedWithIndex = window.mapWithIndex { (o: Observable<Int>, i: Int) -> Observable<String> in
+            let window: Observable<Observable<Int>> = xs.window(timeSpan: .seconds(70), count: 3, scheduler: scheduler)
+            let mappedWithIndex = window.enumerated().map { (i: Int, o: Observable<Int>) -> Observable<String> in
                 return o.map { (e: Int) -> String in
                     return "\(i) \(e)"
                     }
@@ -87,16 +87,16 @@ extension ObservableWindowTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(205, "0 1"),
-            next(210, "0 2"),
-            next(240, "0 3"),
-            next(280, "1 4"),
-            next(320, "2 5"),
-            next(350, "2 6"),
-            next(370, "2 7"),
-            next(420, "3 8"),
-            next(470, "4 9"),
-            error(600, testError)
+            .next(205, "0 1"),
+            .next(210, "0 2"),
+            .next(240, "0 3"),
+            .next(280, "1 4"),
+            .next(320, "2 5"),
+            .next(350, "2 6"),
+            .next(370, "2 7"),
+            .next(420, "3 8"),
+            .next(470, "4 9"),
+            .error(600, testError)
             ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -108,22 +108,22 @@ extension ObservableWindowTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(105, 0),
-            next(205, 1),
-            next(210, 2),
-            next(240, 3),
-            next(280, 4),
-            next(320, 5),
-            next(350, 6),
-            next(370, 7),
-            next(420, 8),
-            next(470, 9),
-            completed(600)
+            .next(105, 0),
+            .next(205, 1),
+            .next(210, 2),
+            .next(240, 3),
+            .next(280, 4),
+            .next(320, 5),
+            .next(350, 6),
+            .next(370, 7),
+            .next(420, 8),
+            .next(470, 9),
+            .completed(600)
             ])
         
         let res = scheduler.start(disposed: 370) { () -> Observable<String> in
-            let window: Observable<Observable<Int>> = xs.window(timeSpan: 70, count: 3, scheduler: scheduler)
-            let mappedWithIndex = window.mapWithIndex { (o: Observable<Int>, i: Int) -> Observable<String> in
+            let window: Observable<Observable<Int>> = xs.window(timeSpan: .seconds(70), count: 3, scheduler: scheduler)
+            let mappedWithIndex = window.enumerated().map { (i: Int, o: Observable<Int>) -> Observable<String> in
                 return o.map { (e: Int) -> String in
                     return "\(i) \(e)"
                 }
@@ -133,13 +133,13 @@ extension ObservableWindowTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(205, "0 1"),
-            next(210, "0 2"),
-            next(240, "0 3"),
-            next(280, "1 4"),
-            next(320, "2 5"),
-            next(350, "2 6"),
-            next(370, "2 7")
+            .next(205, "0 1"),
+            .next(210, "0 2"),
+            .next(240, "0 3"),
+            .next(280, "1 4"),
+            .next(320, "2 5"),
+            .next(350, "2 6"),
+            .next(370, "2 7")
             ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -151,8 +151,8 @@ extension ObservableWindowTest {
         let backgroundScheduler = SerialDispatchQueueScheduler(qos: .default)
         
         let result = try! Observable.range(start: 1, count: 10, scheduler: backgroundScheduler)
-            .window(timeSpan: 1000, count: 3, scheduler: backgroundScheduler)
-            .mapWithIndex { (o: Observable<Int>, i: Int) -> Observable<String> in
+            .window(timeSpan: .seconds(1000), count: 3, scheduler: backgroundScheduler)
+            .enumerated().map { (i: Int, o: Observable<Int>) -> Observable<String> in
                 return o.map { (e: Int) -> String in
                     return "\(i) \(e)"
                     }
@@ -168,13 +168,13 @@ extension ObservableWindowTest {
     #if TRACE_RESOURCES
         func testWindowReleasesResourcesOnComplete() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.just(1).window(timeSpan: 0.0, count: 10, scheduler: scheduler).subscribe()
+            _ = Observable<Int>.just(1).window(timeSpan: .seconds(0), count: 10, scheduler: scheduler).subscribe()
             scheduler.start()
         }
 
         func testWindowReleasesResourcesOnError() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.error(testError).window(timeSpan: 0.0, count: 10, scheduler: scheduler).subscribe()
+            _ = Observable<Int>.error(testError).window(timeSpan: .seconds(0), count: 10, scheduler: scheduler).subscribe()
             scheduler.start()
         }
     #endif

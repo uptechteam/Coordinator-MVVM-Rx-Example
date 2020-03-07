@@ -7,10 +7,8 @@
 //
 
 import UIKit
-#if !RX_NO_MODULE
 import RxSwift
 import RxCocoa
-#endif
 
 public class CollectionViewImageCell: UICollectionViewCell {
     @IBOutlet var imageOutlet: UIImageView!
@@ -23,7 +21,7 @@ public class CollectionViewImageCell: UICollectionViewCell {
 
             self.downloadableImage?
                 .asDriver(onErrorJustReturn: DownloadableImage.offlinePlaceholder)
-                .drive(imageOutlet.rx.downloadableImageAnimated(kCATransitionFade))
+                .drive(imageOutlet.rx.downloadableImageAnimated(CATransitionType.fade.rawValue))
                 .disposed(by: disposeBag)
 
             self.disposeBag = disposeBag

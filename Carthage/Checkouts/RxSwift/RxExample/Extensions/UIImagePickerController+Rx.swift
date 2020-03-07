@@ -9,10 +9,8 @@
 
 #if os(iOS)
     
-#if !RX_NO_MODULE
     import RxSwift
     import RxCocoa
-#endif
     import UIKit
 
     extension Reactive where Base: UIImagePickerController {
@@ -41,7 +39,7 @@
     
 #endif
 
-fileprivate func castOrThrow<T>(_ resultType: T.Type, _ object: Any) throws -> T {
+private func castOrThrow<T>(_ resultType: T.Type, _ object: Any) throws -> T {
     guard let returnValue = object as? T else {
         throw RxCocoaError.castingError(object: object, targetType: resultType)
     }

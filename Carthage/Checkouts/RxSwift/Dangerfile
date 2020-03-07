@@ -1,5 +1,5 @@
 # Warn about develop branch
-warn("Please target PRs to `develop` branch") if github.branch_for_base != "develop" && github.branch_for_base != "swift-3.0"
+warn("Please target PRs to `develop` branch") if github.branch_for_base != "develop"
 
 # Sometimes it's a README fix, or something like that - which isn't relevant for
 # including in a project's CHANGELOG for example
@@ -14,7 +14,7 @@ warn("No CHANGELOG changes made") if git.lines_of_code > 50 && !git.modified_fil
 # Warn pod spec changes
 warn("RxCocoa.podspec changed") if git.modified_files.include?("RxCocoa.podspec")
 warn("RxSwift.podspec changed") if git.modified_files.include?("RxSwift.podspec")
-warn("RxTests.podspec changed") if git.modified_files.include?("RxTests.podspec")
+warn("RxTest.podspec changed") if git.modified_files.include?("RxTest.podspec")
 warn("RxBlocking.podspec changed") if git.modified_files.include?("RxBlocking.podspec")
 
 # Warn summary on pull request

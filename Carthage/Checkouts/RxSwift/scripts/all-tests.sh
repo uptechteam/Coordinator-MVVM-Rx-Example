@@ -72,18 +72,11 @@ fi
 
 if [ "${RELEASE_TEST}" -eq 1 ]; then
 	VALIDATE_PODS=${VALIDATE_PODS:-1}
-	RUN_AUTOMATION_TESTS=${RUN_AUTOMATION_TESTS:-1}
 else
 	VALIDATE_PODS=${VALIDATE_PODS:-0}
-	RUN_AUTOMATION_TESTS=${RUN_AUTOMATION_TESTS:-0}
 fi
 
 RUN_DEVICE_TESTS=${RUN_DEVICE_TESTS:-1}
-
-if [ "$2" == "s" ]; then
-	printf "${RED}Skipping automation tests ...${RESET}\n"
-	RUN_AUTOMATION_TESTS=0
-fi
 
 function ensureVersionEqual() {
 	if [[ "$1" != "$2" ]]; then
@@ -93,7 +86,7 @@ function ensureVersionEqual() {
 }
 
 function ensureNoGitChanges() {
-	if [ `git diff HEAD | wc -l` -gt 0 ]; then
+	if [ `(git add . && git diff HEAD && git reset) | wc -l` -gt 0 ]; then
 		echo $1
 		exit -1
 	fi
@@ -102,20 +95,18 @@ function ensureNoGitChanges() {
 function checkPlistVersions() {
 	RXSWIFT_VERSION=`cat RxSwift.podspec | grep -E "s.version\s+=" | cut -d '"' -f 2`
 	echo "RxSwift version: ${RXSWIFT_VERSION}"
-	PROJECTS=(RxSwift RxCocoa RxBlocking RxTest)
+	PROJECTS=(RxSwift RxCocoa RxRelay RxBlocking RxTest)
 	for project in ${PROJECTS[@]}
 	do
 		echo "Checking version for ${project}"
 		PODSPEC_VERSION=`cat $project.podspec | grep -E "s.version\s+=" | cut -d '"' -f 2`
 		ensureVersionEqual "$RXSWIFT_VERSION" "$PODSPEC_VERSION" "${project} version not equal"
 		PLIST_VERSION=`defaults read  "\`pwd\`/${project}/Info.plist" CFBundleShortVersionString`
-		if [[ "${PLIST_VERSION}" != "${RXSWIFT_VERSION}" ]]; then
+		if ! ( [[ ${RXSWIFT_VERSION} = *"-"* && "${PLIST_VERSION}-"* == "${RXSWIFT_VERSION}" ]] || [[ ! ${RXSWIFT_VERSION} == *"-"* &&  "${PLIST_VERSION}" == "${RXSWIFT_VERSION}" ]] ) ; then
 			echo "Invalid version for `pwd`/${project}/Info.plist: ${PLIST_VERSION}"
-			defaults write  "`pwd`/${project}/Info.plist" CFBundleShortVersionString $RXSWIFT_VERSION
+                        exit -1
 		fi
 	done
-
-	ensureNoGitChanges "Plist versions aren't correct"
 }
 
 ensureNoGitChanges "Please make sure the working tree is clean. Use \`git status\` to check."
@@ -135,45 +126,22 @@ fi
 CONFIGURATIONS=(Release-Tests)
 
 if [ "${RELEASE_TEST}" -eq 1 ]; then
-	CONFIGURATIONS=(Release Release-Tests Debug)
-fi
-
-if [ "${RELEASE_TEST}" -eq 1 ]; then
-	scripts/validate-markdown.sh
+	CONFIGURATIONS=(Debug Release Release-Tests)
 fi
 
 if [ "${VALIDATE_PODS}" -eq 1 ]; then
-	scripts/validate-podspec.sh
+	SWIFT_VERSION=5.0 scripts/validate-podspec.sh
 fi
 
 if [ "${VALIDATE_IOS_EXAMPLE}" -eq 1 ]; then
 	if [[ "${UNIX_NAME}" == "${DARWIN}" ]]; then
-		if [[ "${RUN_AUTOMATION_TESTS}" -eq 1 ]]; then
-			if [[ "${RUN_DEVICE_TESTS}" -eq 1 ]]; then
-				for configuration in ${CONFIGURATIONS[@]}
-				do
-					rx "RxExample-iOSUITests" ${configuration} "Krunoslav Zaher’s iPhone" test
-				done
-			fi
-
-			for configuration in ${CONFIGURATIONS[@]}
+		for scheme in "RxExample-iOS"
+		do
+			for configuration in "Debug"
 			do
-				rx "RxExample-iOSUITests" ${configuration} "${DEFAULT_IOS_SIMULATOR}" test
+				rx ${scheme} ${configuration} "${DEFAULT_IOS_SIMULATOR}" build
 			done
-
-			for configuration in ${CONFIGURATIONS[@]}
-			do
-				rx "RxExample-iOSTests" ${configuration} "${DEFAULT_IOS_SIMULATOR}" test
-			done
-		else
-			for scheme in "RxExample-iOS"
-			do
-				for configuration in "Debug"
-				do
-					rx ${scheme} ${configuration} "${DEFAULT_IOS_SIMULATOR}" build
-				done
-			done
-		fi
+		done
 	elif [[ "${UNIX_NAME}" == "${LINUX}" ]]; then
 		unsupported_target
 	else
@@ -188,7 +156,7 @@ if [ "${VALIDATE_IOS}" -eq 1 ]; then
 		#make sure all iOS tests pass
 		for configuration in ${CONFIGURATIONS[@]}
 		do
-			rx "RxSwift-iOS" ${configuration} "${DEFAULT_IOS_SIMULATOR}" test
+			rx "AllTests-iOS" ${configuration} "${DEFAULT_IOS_SIMULATOR}" test
 		done
 	elif [[ "${UNIX_NAME}" == "${LINUX}" ]]; then
 		unsupported_target
@@ -202,7 +170,7 @@ fi
 
 if [ "${VALIDATE_UNIX}" -eq 1 ]; then
 	if [[ "${UNIX_NAME}" == "${DARWIN}" ]]; then
-		if [[ "${RX_RUN_LINUX_TESTS}" -eq 1 ]]; then
+		if [[ "${TRAVIS}" == "" ]]; then
 			./scripts/test-linux.sh
 		fi
 
@@ -221,13 +189,23 @@ if [ "${VALIDATE_UNIX}" -eq 1 ]; then
 		#make sure all macOS tests pass
 		for configuration in ${CONFIGURATIONS[@]}
 		do
-			rx "RxSwift-macOS" ${configuration} "" test
+			rx "AllTests-macOS" ${configuration} "" test
 		done
 	elif [[ "${UNIX_NAME}" == "${LINUX}" ]]; then
-		cat Package.swift | sed "s/let buildTests = false/let buildTests = true/" > Package.tests.swift
-		mv Package.tests.swift Package.swift
-		swift build -c debug
-		./.build/debug/AllTestz
+		CONFIGURATIONS=(debug release)
+		for configuration in ${CONFIGURATIONS[@]}
+		do
+			echo "Linux Configuration ${configuration}"
+			git checkout Package.swift
+			if [[ $configuration == "debug" ]]; then
+				cat Package.swift | sed "s/let buildTests = false/let buildTests = true/" > Package.tests.swift
+				mv Package.tests.swift Package.swift
+			fi
+			swift build -c ${configuration}
+			if [[ $configuration == "debug" ]]; then
+				./.build/debug/AllTestz
+			fi
+		done
 	else
 		unsupported_os
 	fi
@@ -239,7 +217,7 @@ if [ "${VALIDATE_TVOS}" -eq 1 ]; then
 	if [[ "${UNIX_NAME}" == "${DARWIN}" ]]; then
 		for configuration in ${CONFIGURATIONS[@]}
 		do
-			rx "RxSwift-tvOS" ${configuration} "${DEFAULT_TVOS_SIMULATOR}" test
+			rx "AllTests-tvOS" ${configuration} "${DEFAULT_TVOS_SIMULATOR}" test
 		done
 	elif [[ "${UNIX_NAME}" == "${LINUX}" ]]; then
 		printf "${RED}Skipping tvOS tests ...${RESET}\n"
@@ -254,7 +232,7 @@ if [ "${VALIDATE_WATCHOS}" -eq 1 ]; then
 	if [[ "${UNIX_NAME}" == "${DARWIN}" ]]; then
 		# make sure watchos builds
 		# temporary solution
-		WATCH_OS_BUILD_TARGETS=(RxSwift-watchOS RxCocoa-watchOS RxBlocking-watchOS)
+		WATCH_OS_BUILD_TARGETS=(RxSwift RxCocoa RxRelay RxBlocking)
 		for scheme in ${WATCH_OS_BUILD_TARGETS[@]}
 		do
 			for configuration in ${CONFIGURATIONS[@]}
@@ -278,9 +256,9 @@ else
 fi
 
 if [ "${TEST_SPM}" -eq 1 ]; then
-	rm -rf build || true
-	swift build -c release
-	swift build -c debug
+	rm -rf .build || true
+	swift build -c release --disable-sandbox # until compiler is fixed
+	swift build -c debug --disable-sandbox # until compiler is fixed
 else
 	printf "${RED}Skipping SPM tests ...${RESET}\n"
 fi

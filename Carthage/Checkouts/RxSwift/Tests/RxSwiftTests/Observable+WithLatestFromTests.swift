@@ -19,24 +19,24 @@ extension ObservableWithLatestFromTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(90, 1),
-            next(180, 2),
-            next(250, 3),
-            next(260, 4),
-            next(310, 5),
-            next(340, 6),
-            next(410, 7),
-            next(420, 8),
-            next(470, 9),
-            next(550, 10),
-            completed(590)
+            .next(90, 1),
+            .next(180, 2),
+            .next(250, 3),
+            .next(260, 4),
+            .next(310, 5),
+            .next(340, 6),
+            .next(410, 7),
+            .next(420, 8),
+            .next(470, 9),
+            .next(550, 10),
+            .completed(590)
         ])
         
         let ys = scheduler.createHotObservable([
-            next(255, "bar"),
-            next(330, "foo"),
-            next(350, "qux"),
-            completed(400)
+            .next(255, "bar"),
+            .next(330, "foo"),
+            .next(350, "qux"),
+            .completed(400)
         ])
         
         let res = scheduler.start {
@@ -44,14 +44,14 @@ extension ObservableWithLatestFromTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(260, "4bar"),
-            next(310, "5bar"),
-            next(340, "6foo"),
-            next(410, "7qux"),
-            next(420, "8qux"),
-            next(470, "9qux"),
-            next(550, "10qux"),
-            completed(590)
+            .next(260, "4bar"),
+            .next(310, "5bar"),
+            .next(340, "6foo"),
+            .next(410, "7qux"),
+            .next(420, "8qux"),
+            .next(470, "9qux"),
+            .next(550, "10qux"),
+            .completed(590)
         ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -76,8 +76,8 @@ extension ObservableWithLatestFromTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(200, "35"),
-            completed(200)
+            .next(200, "35"),
+            .completed(200)
         ])
     }
     
@@ -85,21 +85,21 @@ extension ObservableWithLatestFromTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(90, 1),
-            next(180, 2),
-            next(250, 3),
-            next(260, 4),
-            next(310, 5),
-            next(340, 6),
-            completed(390)
+            .next(90, 1),
+            .next(180, 2),
+            .next(250, 3),
+            .next(260, 4),
+            .next(310, 5),
+            .next(340, 6),
+            .completed(390)
         ])
         
         let ys = scheduler.createHotObservable([
-            next(255, "bar"),
-            next(330, "foo"),
-            next(350, "qux"),
-            next(370, "baz"),
-            completed(400)
+            .next(255, "bar"),
+            .next(330, "foo"),
+            .next(350, "qux"),
+            .next(370, "baz"),
+            .completed(400)
         ])
         
         let res = scheduler.start {
@@ -107,10 +107,10 @@ extension ObservableWithLatestFromTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(260, "4bar"),
-            next(310, "5bar"),
-            next(340, "6foo"),
-            completed(390)
+            .next(260, "4bar"),
+            .next(310, "5bar"),
+            .next(340, "6foo"),
+            .completed(390)
         ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -126,21 +126,21 @@ extension ObservableWithLatestFromTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(90, 1),
-            next(180, 2),
-            next(250, 3),
-            next(260, 4),
-            next(310, 5),
-            next(340, 6),
-            completed(390)
+            .next(90, 1),
+            .next(180, 2),
+            .next(250, 3),
+            .next(260, 4),
+            .next(310, 5),
+            .next(340, 6),
+            .completed(390)
         ])
         
         let ys = scheduler.createHotObservable([
-            next(245, "bar"),
-            next(330, "foo"),
-            next(350, "qux"),
-            next(370, "baz"),
-            completed(400)
+            .next(245, "bar"),
+            .next(330, "foo"),
+            .next(350, "qux"),
+            .next(370, "baz"),
+            .completed(400)
         ])
         
         let res = scheduler.start {
@@ -148,11 +148,11 @@ extension ObservableWithLatestFromTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(250, "3bar"),
-            next(260, "4bar"),
-            next(310, "5bar"),
-            next(340, "6foo"),
-            completed(390)
+            .next(250, "3bar"),
+            .next(260, "4bar"),
+            .next(310, "5bar"),
+            .next(340, "6foo"),
+            .completed(390)
         ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -168,24 +168,24 @@ extension ObservableWithLatestFromTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(90, 1),
-            next(180, 2),
-            next(250, 3),
-            next(260, 4),
-            next(310, 5),
-            next(340, 6),
-            next(410, 7),
-            next(420, 8),
-            next(470, 9),
-            next(550, 10),
-            error(590, testError)
+            .next(90, 1),
+            .next(180, 2),
+            .next(250, 3),
+            .next(260, 4),
+            .next(310, 5),
+            .next(340, 6),
+            .next(410, 7),
+            .next(420, 8),
+            .next(470, 9),
+            .next(550, 10),
+            .error(590, testError)
         ])
         
         let ys = scheduler.createHotObservable([
-            next(255, "bar"),
-            next(330, "foo"),
-            next(350, "qux"),
-            completed(400)
+            .next(255, "bar"),
+            .next(330, "foo"),
+            .next(350, "qux"),
+            .completed(400)
         ])
         
         let res = scheduler.start {
@@ -193,14 +193,14 @@ extension ObservableWithLatestFromTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(260, "4bar"),
-            next(310, "5bar"),
-            next(340, "6foo"),
-            next(410, "7qux"),
-            next(420, "8qux"),
-            next(470, "9qux"),
-            next(550, "10qux"),
-            error(590, testError)
+            .next(260, "4bar"),
+            .next(310, "5bar"),
+            .next(340, "6foo"),
+            .next(410, "7qux"),
+            .next(420, "8qux"),
+            .next(470, "9qux"),
+            .next(550, "10qux"),
+            .error(590, testError)
         ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -216,20 +216,20 @@ extension ObservableWithLatestFromTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(90, 1),
-            next(180, 2),
-            next(250, 3),
-            next(260, 4),
-            next(310, 5),
-            next(340, 6),
-            completed(390)
+            .next(90, 1),
+            .next(180, 2),
+            .next(250, 3),
+            .next(260, 4),
+            .next(310, 5),
+            .next(340, 6),
+            .completed(390)
         ])
         
         let ys = scheduler.createHotObservable([
-            next(255, "bar"),
-            next(330, "foo"),
-            next(350, "qux"),
-            error(370, testError)
+            .next(255, "bar"),
+            .next(330, "foo"),
+            .next(350, "qux"),
+            .error(370, testError)
         ])
         
         let res = scheduler.start {
@@ -237,10 +237,10 @@ extension ObservableWithLatestFromTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(260, "4bar"),
-            next(310, "5bar"),
-            next(340, "6foo"),
-            error(370, testError)
+            .next(260, "4bar"),
+            .next(310, "5bar"),
+            .next(340, "6foo"),
+            .error(370, testError)
         ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -256,25 +256,24 @@ extension ObservableWithLatestFromTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(90, 1),
-            next(180, 2),
-            next(250, 3),
-            next(260, 4),
-            next(310, 5),
-            next(340, 6),
-            completed(390)
+            .next(90, 1),
+            .next(180, 2),
+            .next(250, 3),
+            .next(260, 4),
+            .next(310, 5),
+            .next(340, 6),
+            .completed(390)
         ])
         
         let ys = scheduler.createHotObservable([
-            next(255, "bar"),
-            next(330, "foo"),
-            next(350, "qux"),
-            completed(400)
+            .next(255, "bar"),
+            .next(330, "foo"),
+            .next(350, "qux"),
+            .completed(400)
         ])
         
         let res = scheduler.start {
-            xs.withLatestFrom(ys) {
-                (x, y) throws -> String in
+            xs.withLatestFrom(ys) { x, y throws -> String in
                 if x == 5 {
                     throw testError
                 }
@@ -283,8 +282,8 @@ extension ObservableWithLatestFromTest {
         }
         
         XCTAssertEqual(res.events, [
-            next(260, "4bar"),
-            error(310, testError)
+            .next(260, "4bar"),
+            .error(310, testError)
         ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -300,24 +299,24 @@ extension ObservableWithLatestFromTest {
         let scheduler = TestScheduler(initialClock: 0)
 
         let xs = scheduler.createHotObservable([
-            next(90, 1),
-            next(180, 2),
-            next(250, 3),
-            next(260, 4),
-            next(310, 5),
-            next(340, 6),
-            next(410, 7),
-            next(420, 8),
-            next(470, 9),
-            next(550, 10),
-            completed(590)
+            .next(90, 1),
+            .next(180, 2),
+            .next(250, 3),
+            .next(260, 4),
+            .next(310, 5),
+            .next(340, 6),
+            .next(410, 7),
+            .next(420, 8),
+            .next(470, 9),
+            .next(550, 10),
+            .completed(590)
             ])
 
         let ys = scheduler.createHotObservable([
-            next(255, "bar"),
-            next(330, "foo"),
-            next(350, "qux"),
-            completed(400)
+            .next(255, "bar"),
+            .next(330, "foo"),
+            .next(350, "qux"),
+            .completed(400)
             ])
 
         let res = scheduler.start {
@@ -325,14 +324,14 @@ extension ObservableWithLatestFromTest {
         }
 
         XCTAssertEqual(res.events, [
-            next(260, "bar"),
-            next(310, "bar"),
-            next(340, "foo"),
-            next(410, "qux"),
-            next(420, "qux"),
-            next(470, "qux"),
-            next(550, "qux"),
-            completed(590)
+            .next(260, "bar"),
+            .next(310, "bar"),
+            .next(340, "foo"),
+            .next(410, "qux"),
+            .next(420, "qux"),
+            .next(470, "qux"),
+            .next(550, "qux"),
+            .completed(590)
             ])
 
         XCTAssertEqual(xs.subscriptions, [
@@ -347,25 +346,25 @@ extension ObservableWithLatestFromTest {
     #if TRACE_RESOURCES
         func testWithLatestFromReleasesResourcesOnComplete1() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.just(1).delay(20, scheduler: scheduler).withLatestFrom(Observable<Int>.just(1)).subscribe()
+            _ = Observable<Int>.just(1).delay(.seconds(20), scheduler: scheduler).withLatestFrom(Observable<Int>.just(1)).subscribe()
             scheduler.start()
         }
 
         func testWithLatestFromReleasesResourcesOnComplete2() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.just(1).withLatestFrom(Observable<Int>.just(1).delay(20, scheduler: scheduler)).subscribe()
+            _ = Observable<Int>.just(1).withLatestFrom(Observable<Int>.just(1).delay(.seconds(20), scheduler: scheduler)).subscribe()
             scheduler.start()
         }
 
         func testWithLatestFromReleasesResourcesOnError1() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.never().timeout(20, scheduler: scheduler).withLatestFrom(Observable<Int>.just(1)).subscribe()
+            _ = Observable<Int>.never().timeout(.seconds(20), scheduler: scheduler).withLatestFrom(Observable<Int>.just(1)).subscribe()
             scheduler.start()
         }
 
         func testWithLatestFromReleasesResourcesOnError2() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.just(1).withLatestFrom(Observable<Int>.never().timeout(20, scheduler: scheduler)).subscribe()
+            _ = Observable<Int>.just(1).withLatestFrom(Observable<Int>.never().timeout(.seconds(20), scheduler: scheduler)).subscribe()
             scheduler.start()
         }
     #endif

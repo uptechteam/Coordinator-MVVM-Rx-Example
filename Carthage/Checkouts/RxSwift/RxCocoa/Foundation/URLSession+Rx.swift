@@ -7,26 +7,32 @@
 //
 
 import struct Foundation.URL
-import struct Foundation.URLRequest
 import struct Foundation.Data
 import struct Foundation.Date
 import struct Foundation.TimeInterval
-import class Foundation.HTTPURLResponse
-import class Foundation.URLSession
-import class Foundation.URLResponse
 import class Foundation.JSONSerialization
 import class Foundation.NSError
 import var Foundation.NSURLErrorCancelled
 import var Foundation.NSURLErrorDomain
+
+#if canImport(FoundationNetworking)
+import struct FoundationNetworking.URLRequest
+import class FoundationNetworking.HTTPURLResponse
+import class FoundationNetworking.URLSession
+import class FoundationNetworking.URLResponse
+#else
+import struct Foundation.URLRequest
+import class Foundation.HTTPURLResponse
+import class Foundation.URLSession
+import class Foundation.URLResponse
+#endif
 
 #if os(Linux)
     // don't know why
     import Foundation
 #endif
 
-#if !RX_NO_MODULE
 import RxSwift
-#endif
 
 /// RxCocoa URL errors.
 public enum RxCocoaURLError
@@ -58,15 +64,15 @@ extension RxCocoaURLError
     }
 }
 
-fileprivate func escapeTerminalString(_ value: String) -> String {
+private func escapeTerminalString(_ value: String) -> String {
     return value.replacingOccurrences(of: "\"", with: "\\\"", options:[], range: nil)
 }
 
-fileprivate func convertURLRequestToCurlCommand(_ request: URLRequest) -> String {
+private func convertURLRequestToCurlCommand(_ request: URLRequest) -> String {
     let method = request.httpMethod ?? "GET"
     var returnValue = "curl -X \(method) "
 
-    if let httpBody = request.httpBody, request.httpMethod == "POST" {
+    if let httpBody = request.httpBody, request.httpMethod == "POST" || request.httpMethod == "PUT" {
         let maybeBody = String(data: httpBody, encoding: String.Encoding.utf8)
         if let body = maybeBody {
             returnValue += "-d \"\(escapeTerminalString(body))\" "
@@ -88,7 +94,7 @@ fileprivate func convertURLRequestToCurlCommand(_ request: URLRequest) -> String
     return returnValue
 }
 
-fileprivate func convertResponseToString(_ response: URLResponse?, _ error: NSError?, _ interval: TimeInterval) -> String {
+private func convertResponseToString(_ response: URLResponse?, _ error: NSError?, _ interval: TimeInterval) -> String {
     let ms = Int(interval * 1000)
 
     if let response = response as? HTTPURLResponse {
@@ -123,7 +129,7 @@ extension Reactive where Base: URLSession {
     - parameter request: URL request.
     - returns: Observable sequence of URL responses.
     */
-    public func response(request: URLRequest) -> Observable<(HTTPURLResponse, Data)> {
+    public func response(request: URLRequest) -> Observable<(response: HTTPURLResponse, data: Data)> {
         return Observable.create { observer in
 
             // smart compiler should be able to optimize this out
@@ -136,13 +142,13 @@ extension Reactive where Base: URLSession {
                d = nil
             }
 
-            let task = self.base.dataTask(with: request) { (data, response, error) in
+            let task = self.base.dataTask(with: request) { data, response, error in
 
                 if Logging.URLRequests(request) {
                     let interval = Date().timeIntervalSince(d ?? Date())
                     print(convertURLRequestToCurlCommand(request))
                     #if os(Linux)
-                        print(convertResponseToString(response, error.flatMap { $0 as? NSError }, interval))
+                        print(convertResponseToString(response, error.flatMap { $0 as NSError }, interval))
                     #else
                         print(convertResponseToString(response, error.map { $0 as NSError }, interval))
                     #endif
@@ -158,7 +164,7 @@ extension Reactive where Base: URLSession {
                     return
                 }
 
-                observer.on(.next(httpResponse, data))
+                observer.on(.next((httpResponse, data)))
                 observer.on(.completed)
             }
 
@@ -184,12 +190,12 @@ extension Reactive where Base: URLSession {
     - returns: Observable sequence of response data.
     */
     public func data(request: URLRequest) -> Observable<Data> {
-        return response(request: request).map { (response, data) -> Data in
-            if 200 ..< 300 ~= response.statusCode {
-                return data
+        return self.response(request: request).map { pair -> Data in
+            if 200 ..< 300 ~= pair.0.statusCode {
+                return pair.1
             }
             else {
-                throw RxCocoaURLError.httpRequestFailed(response: response, data: data)
+                throw RxCocoaURLError.httpRequestFailed(response: pair.0, data: pair.1)
             }
         }
     }
@@ -212,7 +218,7 @@ extension Reactive where Base: URLSession {
     - returns: Observable sequence of response JSON.
     */
     public func json(request: URLRequest, options: JSONSerialization.ReadingOptions = []) -> Observable<Any> {
-        return data(request: request).map { (data) -> Any in
+        return self.data(request: request).map { data -> Any in
             do {
                 return try JSONSerialization.jsonObject(with: data, options: options)
             } catch let error {
@@ -239,7 +245,7 @@ extension Reactive where Base: URLSession {
     - returns: Observable sequence of response JSON.
     */
     public func json(url: Foundation.URL) -> Observable<Any> {
-        return json(request: URLRequest(url: url))
+        return self.json(request: URLRequest(url: url))
     }
 }
 

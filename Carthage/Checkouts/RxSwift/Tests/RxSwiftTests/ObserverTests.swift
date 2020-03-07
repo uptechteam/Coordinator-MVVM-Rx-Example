@@ -98,7 +98,7 @@ extension ObserverTests {
             return x / 2
         }.on(.next(2))
 
-        XCTAssertEqual(observer.events, [next(1)])
+        XCTAssertEqual(observer.events, [.next(1)])
     }
 
     func testMapElementCompleted() {
@@ -108,7 +108,7 @@ extension ObserverTests {
             return x / 2
         }.on(.completed)
 
-        XCTAssertEqual(observer.events, [completed()])
+        XCTAssertEqual(observer.events, [.completed()])
     }
 
     func testMapElementError() {
@@ -118,16 +118,16 @@ extension ObserverTests {
             return x / 2
         }.on(.error(testError))
 
-        XCTAssertEqual(observer.events, [error(testError)])
+        XCTAssertEqual(observer.events, [.error(testError)])
     }
 
     func testMapElementThrow() {
         let observer = PrimitiveMockObserver<Int>()
 
-        observer.mapObserver { (x: Int) -> Int in
+        observer.mapObserver { _ -> Int in
             throw testError
         }.on(.next(2))
 
-        XCTAssertEqual(observer.events, [error(testError)])
+        XCTAssertEqual(observer.events, [.error(testError)])
     }
 }

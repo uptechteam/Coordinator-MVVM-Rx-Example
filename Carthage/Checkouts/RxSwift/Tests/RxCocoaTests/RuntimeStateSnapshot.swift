@@ -13,12 +13,12 @@ final class ObjectRuntimeState {
     let actingAs: ClassRuntimeState
 
     init(target: AnyObject) {
-        assert(object_getClass(target) == type(of: target))
-        real = ClassRuntimeState(object_getClass(target))
+        assert(object_getClass(target)!.isSubclass(of: type(of: target)))
+        real = ClassRuntimeState(object_getClass(target)!)
         actingAs = ClassRuntimeState(RXObjCTestRuntime.objCClass(target))
     }
 
-    fileprivate static func changesFrom(_ from: ClassRuntimeState, to: ClassRuntimeState) -> [ObjectRuntimeChange] {
+    private static func changesFrom(_ from: ClassRuntimeState, to: ClassRuntimeState) -> [ObjectRuntimeChange] {
         if from.targetClass == to.targetClass {
             var changes = [ObjectRuntimeChange]()
             for (selector, implementation) in to.implementations {
@@ -88,9 +88,9 @@ enum ObjectRuntimeChange : Hashable {
 }
 
 extension ObjectRuntimeChange {
-    var hashValue: Int {
+    func hash(into hasher: inout Hasher) {
         // who cares, this is not performance critical
-        return 0
+        hasher.combine(0)
     }
 
     var isClassChange: Bool {
@@ -148,7 +148,7 @@ struct ClassRuntimeState {
 
         var result = [Selector: IMP]()
         for i in 0 ..< count {
-            let method: Method = methods!.advanced(by: Int(i)).pointee!
+            let method: Method = methods!.advanced(by: Int(i)).pointee
             result[method_getName(method)] = method_getImplementation(method)
         }
 
