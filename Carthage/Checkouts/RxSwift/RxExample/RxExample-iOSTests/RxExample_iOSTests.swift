@@ -140,14 +140,14 @@ class RxExample_iOSTests
         
         This method enables using mock schedulers for while testing drivers.
         */
-        driveOnScheduler(scheduler) {
+        SharingScheduler.mock(scheduler: scheduler) {
             
             let viewModel = GithubSignupViewModel2(
                 input: (
                     username: scheduler.createHotObservable(usernameEvents).asDriver(onErrorJustReturn: ""),
                     password: scheduler.createHotObservable(passwordEvents).asDriver(onErrorJustReturn: ""),
                     repeatedPassword: scheduler.createHotObservable(repeatedPasswordEvents).asDriver(onErrorJustReturn: ""),
-                    loginTaps: scheduler.createHotObservable(loginTapEvents).asDriver(onErrorJustReturn: ())
+                    loginTaps: scheduler.createHotObservable(loginTapEvents).asSignal(onErrorJustReturn: ())
                 ),
                 dependency: (
                     API: mockAPI,
@@ -185,7 +185,8 @@ extension RxExample_iOSTests {
                     return "---f"
                 }
             },
-            signup: scheduler.mock(values: booleans, errors: errors) { (username, password) -> String in
+            signup: scheduler.mock(values: booleans, errors: errors) { (args: (String, String)) -> String in
+                let (username, password) = args
                 if username == "secretusername" && password == "secret" {
                     return "--t"
                 }

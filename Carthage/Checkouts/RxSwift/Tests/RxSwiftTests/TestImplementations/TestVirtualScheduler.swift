@@ -7,8 +7,7 @@
 //
 
 import RxSwift
-
-import struct Foundation.Date
+import Foundation
 
 /**
 Scheduler that tests virtual scheduler
@@ -27,18 +26,18 @@ struct TestVirtualSchedulerVirtualTimeConverter : VirtualTimeConverterType {
     typealias VirtualTimeIntervalUnit = Int
 
     func convertFromVirtualTime(_ virtualTime: VirtualTimeUnit) -> RxTime {
-        return Date(timeIntervalSince1970: RxTimeInterval(virtualTime) * 10.0)
+        return Date(timeIntervalSince1970: Foundation.TimeInterval(virtualTime) * 10.0)
     }
 
     func convertToVirtualTime(_ time: RxTime) -> VirtualTimeUnit {
         return Int(time.timeIntervalSince1970 / 10.0)
     }
 
-    func convertFromVirtualTimeInterval(_ virtualTimeInterval: VirtualTimeIntervalUnit) -> RxTimeInterval {
-        return RxTimeInterval(virtualTimeInterval * 10)
+    func convertFromVirtualTimeInterval(_ virtualTimeInterval: VirtualTimeIntervalUnit) -> Foundation.TimeInterval {
+        return Foundation.TimeInterval(virtualTimeInterval * 10)
     }
 
-    func convertToVirtualTimeInterval(_ timeInterval: RxTimeInterval) -> VirtualTimeIntervalUnit {
+    func convertToVirtualTimeInterval(_ timeInterval: Foundation.TimeInterval) -> VirtualTimeIntervalUnit {
         return Int(timeInterval / 10.0)
     }
 

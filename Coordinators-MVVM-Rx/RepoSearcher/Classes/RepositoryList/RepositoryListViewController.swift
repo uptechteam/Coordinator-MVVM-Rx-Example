@@ -33,7 +33,7 @@ class RepositoryListViewController: UIViewController, StoryboardInitializable {
     private func setupUI() {
         navigationItem.rightBarButtonItem = chooseLanguageButton
 
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 100
         tableView.insertSubview(refreshControl, at: 0)
     }

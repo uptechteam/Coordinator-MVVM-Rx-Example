@@ -6,14 +6,12 @@
 //  Copyright © 2015 Krunoslav Zaher. All rights reserved.
 //
 
-#if !RX_NO_MODULE
 import RxSwift
-#endif
+import RxRelay
 
-private let driverErrorMessage = "`drive*` family of methods can be only called from `MainThread`.\n" +
+private let errorMessage = "`drive*` family of methods can be only called from `MainThread`.\n" +
 "This is required to ensure that the last replayed `Driver` element is delivered on `MainThread`.\n"
 
-// This would ideally be Driver, but unfortunately Driver can't be extended in Swift 3.0
 extension SharedSequenceConvertibleType where SharingStrategy == DriverSharingStrategy {
     /**
     Creates new subscription and sends elements to observer.
@@ -24,8 +22,8 @@ extension SharedSequenceConvertibleType where SharingStrategy == DriverSharingSt
     - parameter observer: Observer that receives events.
     - returns: Disposable object that can be used to unsubscribe the observer from the subject.
     */
-    public func drive<O: ObserverType>(_ observer: O) -> Disposable where O.E == E {
-        MainScheduler.ensureExecutingOnScheduler(errorMessage: driverErrorMessage)
+    public func drive<Observer: ObserverType>(_ observer: Observer) -> Disposable where Observer.Element == Element {
+        MainScheduler.ensureRunningOnMainThread(errorMessage: errorMessage)
         return self.asSharedSequence().asObservable().subscribe(observer)
     }
 
@@ -38,36 +36,36 @@ extension SharedSequenceConvertibleType where SharingStrategy == DriverSharingSt
      - parameter observer: Observer that receives events.
      - returns: Disposable object that can be used to unsubscribe the observer from the subject.
      */
-    public func drive<O: ObserverType>(_ observer: O) -> Disposable where O.E == E? {
-        MainScheduler.ensureExecutingOnScheduler(errorMessage: driverErrorMessage)
-        return self.asSharedSequence().asObservable().map { $0 as E? }.subscribe(observer)
+    public func drive<Observer: ObserverType>(_ observer: Observer) -> Disposable where Observer.Element == Element? {
+        MainScheduler.ensureRunningOnMainThread(errorMessage: errorMessage)
+        return self.asSharedSequence().asObservable().map { $0 as Element? }.subscribe(observer)
     }
 
     /**
-    Creates new subscription and sends elements to variable.
+    Creates new subscription and sends elements to `BehaviorRelay`.
     This method can be only called from `MainThread`.
 
-    - parameter variable: Target variable for sequence elements.
-    - returns: Disposable object that can be used to unsubscribe the observer from the variable.
+    - parameter relay: Target relay for sequence elements.
+    - returns: Disposable object that can be used to unsubscribe the observer from the relay.
     */
-    public func drive(_ variable: Variable<E>) -> Disposable {
-        MainScheduler.ensureExecutingOnScheduler(errorMessage: driverErrorMessage)
-        return drive(onNext: { e in
-            variable.value = e
+    public func drive(_ relay: BehaviorRelay<Element>) -> Disposable {
+        MainScheduler.ensureRunningOnMainThread(errorMessage: errorMessage)
+        return self.drive(onNext: { e in
+            relay.accept(e)
         })
     }
 
     /**
-     Creates new subscription and sends elements to variable.
+     Creates new subscription and sends elements to `BehaviorRelay`.
      This method can be only called from `MainThread`.
 
-     - parameter variable: Target variable for sequence elements.
-     - returns: Disposable object that can be used to unsubscribe the observer from the variable.
+     - parameter relay: Target relay for sequence elements.
+     - returns: Disposable object that can be used to unsubscribe the observer from the relay.
      */
-    public func drive(_ variable: Variable<E?>) -> Disposable {
-        MainScheduler.ensureExecutingOnScheduler(errorMessage: driverErrorMessage)
-        return drive(onNext: { e in
-            variable.value = e
+    public func drive(_ relay: BehaviorRelay<Element?>) -> Disposable {
+        MainScheduler.ensureRunningOnMainThread(errorMessage: errorMessage)
+        return self.drive(onNext: { e in
+            relay.accept(e)
         })
     }
 
@@ -78,8 +76,8 @@ extension SharedSequenceConvertibleType where SharingStrategy == DriverSharingSt
     - parameter with: Function used to bind elements from `self`.
     - returns: Object representing subscription.
     */
-    public func drive<R>(_ transformation: (Observable<E>) -> R) -> R {
-        MainScheduler.ensureExecutingOnScheduler(errorMessage: driverErrorMessage)
+    public func drive<Result>(_ transformation: (Observable<Element>) -> Result) -> Result {
+        MainScheduler.ensureRunningOnMainThread(errorMessage: errorMessage)
         return transformation(self.asObservable())
     }
 
@@ -97,8 +95,8 @@ extension SharedSequenceConvertibleType where SharingStrategy == DriverSharingSt
     - parameter curriedArgument: Final argument passed to `binder` to finish binding process.
     - returns: Object representing subscription.
     */
-    public func drive<R1, R2>(_ with: (Observable<E>) -> (R1) -> R2, curriedArgument: R1) -> R2 {
-        MainScheduler.ensureExecutingOnScheduler(errorMessage: driverErrorMessage)
+    public func drive<R1, R2>(_ with: (Observable<Element>) -> (R1) -> R2, curriedArgument: R1) -> R2 {
+        MainScheduler.ensureRunningOnMainThread(errorMessage: errorMessage)
         return with(self.asObservable())(curriedArgument)
     }
     
@@ -115,8 +113,8 @@ extension SharedSequenceConvertibleType where SharingStrategy == DriverSharingSt
     gracefully completed, errored, or if the generation is canceled by disposing subscription)
     - returns: Subscription object used to unsubscribe from the observable sequence.
     */
-    public func drive(onNext: ((E) -> Void)? = nil, onCompleted: (() -> Void)? = nil, onDisposed: (() -> Void)? = nil) -> Disposable {
-        MainScheduler.ensureExecutingOnScheduler(errorMessage: driverErrorMessage)
+    public func drive(onNext: ((Element) -> Void)? = nil, onCompleted: (() -> Void)? = nil, onDisposed: (() -> Void)? = nil) -> Disposable {
+        MainScheduler.ensureRunningOnMainThread(errorMessage: errorMessage)
         return self.asObservable().subscribe(onNext: onNext, onCompleted: onCompleted, onDisposed: onDisposed)
     }
 }

@@ -20,4 +20,49 @@ extension NSTextFieldTests {
         let createView: () -> NSTextField = { NSTextField(frame: CGRect(x: 0, y: 0, width: 1, height: 1)) }
         ensurePropertyDeallocated(createView, "a") { (view: NSTextField) in view.rx.text.orEmpty }
     }
+
+    func testTextField_ControlTextDidChange_ForwardsToDelegates() {
+
+        var completed = false
+
+        autoreleasepool {
+            let textField = NSTextField()
+            let delegate = TextFieldDelegate()
+            textField.delegate = delegate
+            var rxDidChange = false
+
+            _ = textField.rx.text
+                .skip(1) // Initial value
+                .subscribe(onNext: { _ in
+                    rxDidChange = true
+                }, onCompleted: {
+                    completed = true
+                })
+
+            XCTAssertFalse(rxDidChange)
+            XCTAssertFalse(delegate.didChange)
+
+            let notification = Notification(
+                name: NSControl.textDidChangeNotification,
+                object: textField,
+                userInfo: ["NSFieldEditor" : NSText()])
+
+            textField.delegate?.controlTextDidChange?(notification)
+
+            XCTAssertTrue(rxDidChange)
+            XCTAssertTrue(delegate.didChange)
+        }
+
+        XCTAssertTrue(completed)
+    }
+
+}
+
+private final class TextFieldDelegate: NSObject, NSTextFieldDelegate {
+
+    var didChange = false
+
+    func controlTextDidChange(_ notification: Notification) {
+        didChange = true
+    }
 }

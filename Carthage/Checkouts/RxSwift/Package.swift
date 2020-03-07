@@ -1,84 +1,72 @@
+// swift-tools-version:5.0
+
 import PackageDescription
-import Foundation
 
 let buildTests = false
-let RxTestIsTarget = buildTests || ProcessInfo.processInfo.environment["TEST"] == "1"
 
-#if os(Linux)
-let rxCocoaDependencies: [Target.Dependency] = [
-        .Target(name: "RxSwift"),
-    ]
-#else
-let rxCocoaDependencies: [Target.Dependency] = [
-        .Target(name: "RxSwift"),
-        .Target(name: "RxCocoaRuntime"),
-    ]
-#endif
+extension Product {
+  static func allTests() -> [Product] {
+    if buildTests {
+      return [.executable(name: "AllTestz", targets: ["AllTestz"])]
+    } else {
+      return []
+    }
+  }
+}
 
-let library = [
-        Target(
-            name: "RxSwift"
-        ),
-        Target(
-            name: "RxBlocking",
-            dependencies: [
-                .Target(name: "RxSwift")
-            ]
-        ),
-        Target(
-            name: "RxCocoa",
-            dependencies: rxCocoaDependencies
-        )
-] + (RxTestIsTarget ? [
-        Target(
-            name: "RxTest",
-            dependencies: [
-                .Target(name: "RxSwift")
-            ]
-        ),
-] : [])
- 
-#if os(Linux) 
-    let cocoaRuntime: [Target] = []   
-#else
-    let cocoaRuntime: [Target] = [
-         Target(
-            name: "RxCocoaRuntime",
-            dependencies: [
-                .Target(name: "RxSwift")
-            ]
-        )
-    ]
-#endif
+extension Target {
+  static func rxCocoa() -> [Target] {
+    #if os(Linux)
+      return [.target(name: "RxCocoa", dependencies: ["RxSwift", "RxRelay"])]
+    #else
+      return [.target(name: "RxCocoa", dependencies: ["RxSwift", "RxRelay", "RxCocoaRuntime"])]
+    #endif
+  }
 
-let tests: [Target] = (buildTests ? [
-        Target(
-            name: "AllTestz",
-            dependencies: [
-	        .Target(name: "RxSwift"),
-	        .Target(name: "RxBlocking"),
-	        .Target(name: "RxTest"),
-	        .Target(name: "RxCocoa")
-            ]
-        )
-    ] : [])
+  static func rxCocoaRuntime() -> [Target] {
+    #if os(Linux)
+      return []
+    #else
+      return [.target(name: "RxCocoaRuntime", dependencies: ["RxSwift"])]
+    #endif
+  }
 
-let testExcludes: [String] = (buildTests ? [] : ["Sources/AllTestz"]) + (RxTestIsTarget ? [] : ["Sources/RxTest"])
-
-#if os(Linux)
-
-    let excludes: [String] = [
-        "Tests",
-        "Sources/RxCocoaRuntime",
-    ] + testExcludes
-#else
-    let excludes: [String] = [
-        "Tests",
-    ] + testExcludes
-#endif
+  static func allTests() -> [Target] {
+    if buildTests {
+      return [.target(name: "AllTestz", dependencies: ["RxSwift", "RxCocoa", "RxBlocking", "RxTest"])]
+    } else {
+      return []
+    }
+  }
+}
 
 let package = Package(
-    name: "RxSwift",
-    targets: library + cocoaRuntime + tests,
-    exclude: excludes
+  name: "RxSwift",
+  platforms: [
+    .macOS(.v10_10), .iOS(.v8), .tvOS(.v9), .watchOS(.v3)
+  ],
+  products: ([
+    [
+      .library(name: "RxSwift", targets: ["RxSwift"]),
+      .library(name: "RxCocoa", targets: ["RxCocoa"]),
+      .library(name: "RxRelay", targets: ["RxRelay"]),
+      .library(name: "RxBlocking", targets: ["RxBlocking"]),
+      .library(name: "RxTest", targets: ["RxTest"]),
+    ],
+    Product.allTests()
+  ] as [[Product]]).flatMap { $0 },
+  targets: ([
+    [
+      .target(name: "RxSwift", dependencies: []),
+    ], 
+    Target.rxCocoa(),
+    Target.rxCocoaRuntime(),
+    [
+      .target(name: "RxRelay", dependencies: ["RxSwift"]),
+      .target(name: "RxBlocking", dependencies: ["RxSwift"]),
+      .target(name: "RxTest", dependencies: ["RxSwift"]),
+    ],
+    Target.allTests()
+  ] as [[Target]]).flatMap { $0 },
+  swiftLanguageVersions: [.v5]
 )

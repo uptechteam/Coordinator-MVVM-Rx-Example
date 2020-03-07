@@ -18,32 +18,32 @@ extension ObservableBufferTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(205, 1),
-            next(210, 2),
-            next(240, 3),
-            next(280, 4),
-            next(320, 5),
-            next(350, 6),
-            next(370, 7),
-            next(420, 8),
-            next(470, 9),
-            completed(600)
+            .next(205, 1),
+            .next(210, 2),
+            .next(240, 3),
+            .next(280, 4),
+            .next(320, 5),
+            .next(350, 6),
+            .next(370, 7),
+            .next(420, 8),
+            .next(470, 9),
+            .completed(600)
             ])
         
         
         let res = scheduler.start {
-            xs.buffer(timeSpan: 70, count: 3, scheduler: scheduler).map { EquatableArray($0) }
+            xs.buffer(timeSpan: .seconds(70), count: 3, scheduler: scheduler).map { EquatableArray($0) }
         }
         
         XCTAssertEqual(res.events, [
-            next(240, EquatableArray([1, 2, 3])),
-            next(310, EquatableArray([4])),
-            next(370, EquatableArray([5, 6, 7])),
-            next(440, EquatableArray([8])),
-            next(510, EquatableArray([9])),
-            next(580, EquatableArray([])),
-            next(600, EquatableArray([])),
-            completed(600)
+            .next(240, EquatableArray([1, 2, 3])),
+            .next(310, EquatableArray([4])),
+            .next(370, EquatableArray([5, 6, 7])),
+            .next(440, EquatableArray([8])),
+            .next(510, EquatableArray([9])),
+            .next(580, EquatableArray([])),
+            .next(600, EquatableArray([])),
+            .completed(600)
             ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -55,30 +55,30 @@ extension ObservableBufferTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(205, 1),
-            next(210, 2),
-            next(240, 3),
-            next(280, 4),
-            next(320, 5),
-            next(350, 6),
-            next(370, 7),
-            next(420, 8),
-            next(470, 9),
-            error(600, testError)
+            .next(205, 1),
+            .next(210, 2),
+            .next(240, 3),
+            .next(280, 4),
+            .next(320, 5),
+            .next(350, 6),
+            .next(370, 7),
+            .next(420, 8),
+            .next(470, 9),
+            .error(600, testError)
             ])
         
         let res = scheduler.start {
-            xs.buffer(timeSpan: 70, count: 3, scheduler: scheduler).map { EquatableArray($0) }
+            xs.buffer(timeSpan: .seconds(70), count: 3, scheduler: scheduler).map { EquatableArray($0) }
         }
         
         XCTAssertEqual(res.events, [
-            next(240, EquatableArray([1, 2, 3])),
-            next(310, EquatableArray([4])),
-            next(370, EquatableArray([5, 6, 7])),
-            next(440, EquatableArray([8])),
-            next(510, EquatableArray([9])),
-            next(580, EquatableArray([])),
-            error(600, testError)
+            .next(240, EquatableArray([1, 2, 3])),
+            .next(310, EquatableArray([4])),
+            .next(370, EquatableArray([5, 6, 7])),
+            .next(440, EquatableArray([8])),
+            .next(510, EquatableArray([9])),
+            .next(580, EquatableArray([])),
+            .error(600, testError)
             ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -90,26 +90,26 @@ extension ObservableBufferTest {
         let scheduler = TestScheduler(initialClock: 0)
         
         let xs = scheduler.createHotObservable([
-            next(205, 1),
-            next(210, 2),
-            next(240, 3),
-            next(280, 4),
-            next(320, 5),
-            next(350, 6),
-            next(370, 7),
-            next(420, 8),
-            next(470, 9),
-            completed(600)
+            .next(205, 1),
+            .next(210, 2),
+            .next(240, 3),
+            .next(280, 4),
+            .next(320, 5),
+            .next(350, 6),
+            .next(370, 7),
+            .next(420, 8),
+            .next(470, 9),
+            .completed(600)
             ])
         
         let res = scheduler.start(disposed: 370) {
-            xs.buffer(timeSpan: 70, count: 3, scheduler: scheduler).map { EquatableArray($0) }
+            xs.buffer(timeSpan: .seconds(70), count: 3, scheduler: scheduler).map { EquatableArray($0) }
         }
         
         XCTAssertEqual(res.events, [
-            next(240, EquatableArray([1, 2, 3])),
-            next(310, EquatableArray([4])),
-            next(370, EquatableArray([5, 6, 7]))
+            .next(240, EquatableArray([1, 2, 3])),
+            .next(310, EquatableArray([4])),
+            .next(370, EquatableArray([5, 6, 7]))
             ])
         
         XCTAssertEqual(xs.subscriptions, [
@@ -121,7 +121,7 @@ extension ObservableBufferTest {
         let backgroundScheduler = SerialDispatchQueueScheduler(qos: .default)
         
         let result = try! Observable.range(start: 1, count: 10, scheduler: backgroundScheduler)
-            .buffer(timeSpan: 1000, count: 3, scheduler: backgroundScheduler)
+            .buffer(timeSpan: .seconds(1000), count: 3, scheduler: backgroundScheduler)
             .skip(1)
             .toBlocking()
             .first()
@@ -132,13 +132,13 @@ extension ObservableBufferTest {
     #if TRACE_RESOURCES
         func testBufferReleasesResourcesOnComplete() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.just(1).buffer(timeSpan: 0.0, count: 10, scheduler: scheduler).subscribe()
+            _ = Observable<Int>.just(1).buffer(timeSpan: .seconds(0), count: 10, scheduler: scheduler).subscribe()
             scheduler.start()
         }
 
         func testBufferReleasesResourcesOnError() {
             let scheduler = TestScheduler(initialClock: 0)
-            _ = Observable<Int>.error(testError).buffer(timeSpan: 0.0, count: 10, scheduler: scheduler).subscribe()
+            _ = Observable<Int>.error(testError).buffer(timeSpan: .seconds(0), count: 10, scheduler: scheduler).subscribe()
             scheduler.start()
         }
     #endif

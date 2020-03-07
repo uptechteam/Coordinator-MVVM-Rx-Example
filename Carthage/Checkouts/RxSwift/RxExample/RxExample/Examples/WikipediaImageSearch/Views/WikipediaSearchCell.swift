@@ -7,10 +7,8 @@
 //
 
 import UIKit
-#if !RX_NO_MODULE
 import RxSwift
 import RxCocoa
-#endif
 
 public class WikipediaSearchCell: UITableViewCell {
 
@@ -74,7 +72,7 @@ public class WikipediaSearchCell: UITableViewCell {
 
 }
 
-fileprivate protocol ReusableView: class {
+private protocol ReusableView: class {
     var disposeBag: DisposeBag? { get }
     func prepareForReuse()
 }
@@ -87,7 +85,7 @@ extension CollectionViewImageCell : ReusableView {
 
 }
 
-fileprivate extension ReusableView {
+private extension ReusableView {
     func installHackBecauseOfAutomationLeaksOnIOS10(firstViewThatDoesntLeak: UIView) {
         if #available(iOS 10.0, *) {
             if OSApplication.isInUITest  {

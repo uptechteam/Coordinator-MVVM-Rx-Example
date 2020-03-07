@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Rx.playground">
-   </FileRef>
-   <FileRef
       location = "group:Package.swift">
    </FileRef>
    <FileRef
@@ -19,6 +16,9 @@
    <Group
       location = "container:"
       name = "Podspecs">
+      <FileRef
+         location = "group:RxRelay.podspec">
+      </FileRef>
       <FileRef
          location = "group:RxTest.podspec">
       </FileRef>
@@ -36,13 +36,13 @@
       location = "group:scripts"
       name = "scripts">
       <FileRef
+         location = "group:package-spm.swift">
+      </FileRef>
+      <FileRef
          location = "group:all-tests.sh">
       </FileRef>
       <FileRef
          location = "group:common.sh">
-      </FileRef>
-      <FileRef
-         location = "group:/Users/kzaher/Projects/RxSwift/scripts/package-spm.swift">
       </FileRef>
       <FileRef
          location = "group:test-linux.sh">
@@ -64,7 +64,13 @@
       location = "group:Documentation"
       name = "Documentation">
       <FileRef
+         location = "group:ComparisonWithOtherLibraries.md">
+      </FileRef>
+      <FileRef
          location = "group:DesignRationale.md">
+      </FileRef>
+      <FileRef
+         location = "group:ExampleApp.md">
       </FileRef>
       <FileRef
          location = "group:Examples.md">
@@ -79,7 +85,10 @@
          location = "group:MathBehindRx.md">
       </FileRef>
       <FileRef
-         location = "group:Migration.md">
+         location = "group:NewFeatureRequestTemplate.md">
+      </FileRef>
+      <FileRef
+         location = "group:Playgrounds.md">
       </FileRef>
       <FileRef
          location = "group:Schedulers.md">
@@ -88,10 +97,19 @@
          location = "group:Subjects.md">
       </FileRef>
       <FileRef
+         location = "group:Tips.md">
+      </FileRef>
+      <FileRef
          location = "group:Traits.md">
       </FileRef>
       <FileRef
+         location = "group:UnitTests.md">
+      </FileRef>
+      <FileRef
          location = "group:Warnings.md">
+      </FileRef>
+      <FileRef
+         location = "group:Why.md">
       </FileRef>
    </Group>
    <FileRef

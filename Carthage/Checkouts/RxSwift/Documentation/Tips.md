@@ -9,7 +9,6 @@ e.g.
 ```swift
 extension ObservableType where E: MaybeCool {
 
-    @warn_unused_result(message="http://git.io/rxs.uo")
     public func coolElements()
         -> Observable<E> {
           return filter { e -> Bool in
@@ -30,9 +29,9 @@ extension ObservableType where E: MaybeCool {
       performURLRequest(text).subscribe(onNext: { result in
           ...
       })
-      .addDisposableTo(disposeBag)
+      .disposed(by: disposeBag)
   })
-  .addDisposableTo(disposeBag)
+  .disposed(by: disposeBag)
   ```
 
   **Preferred way of chaining disposables by using operators.**
@@ -46,5 +45,5 @@ extension ObservableType where E: MaybeCool {
           return performURLRequest(text)
       }
       ...
-      .addDisposableTo(disposeBag) // only one top most disposable
+      .disposed(by: disposeBag) // only one top most disposable
   ```

@@ -61,65 +61,63 @@ extension GitHubSearchRepositoriesState {
 import RxSwift
 import RxCocoa
 
+struct GithubQuery: Equatable {
+    let searchText: String;
+    let shouldLoadNextPage: Bool;
+    let nextURL: URL?
+}
+
 /**
  This method contains the gist of paginated GitHub search.
  
  */
 func githubSearchRepositories(
-        searchText: Driver<String>,
-        loadNextPageTrigger: @escaping (Driver<GitHubSearchRepositoriesState>) -> Driver<()>,
+        searchText: Signal<String>,
+        loadNextPageTrigger: @escaping (Driver<GitHubSearchRepositoriesState>) -> Signal<()>,
         performSearch: @escaping (URL) -> Observable<SearchRepositoriesResponse>
     ) -> Driver<GitHubSearchRepositoriesState> {
 
-    let searchPerformerFeedback: (Driver<GitHubSearchRepositoriesState>) -> Driver<GitHubCommand> = { state in
-        // this is a general pattern how to model a most common feedback loop
-        // first select part of state describing feedback control
-        return state.map { (searchText: $0.searchText, shouldLoadNextPage: $0.shouldLoadNextPage, nextURL: $0.nextURL) }
-            // only propagate changed control values since there could be multiple feedback loops working in parallel
-            .distinctUntilChanged { $0 == $1 }
-            // perform feedback loop effects
-            .flatMapLatest { (searchText, shouldLoadNextPage, nextURL) -> Driver<GitHubCommand> in
-                if !shouldLoadNextPage {
-                    return Driver.empty()
+
+
+    let searchPerformerFeedback: (Driver<GitHubSearchRepositoriesState>) -> Signal<GitHubCommand> = react(
+        query: { (state) in
+            GithubQuery(searchText: state.searchText, shouldLoadNextPage: state.shouldLoadNextPage, nextURL: state.nextURL)
+        },
+        effects: { query -> Signal<GitHubCommand> in
+                if !query.shouldLoadNextPage {
+                    return Signal.empty()
                 }
 
-                if searchText.isEmpty {
-                    return Driver.just(GitHubCommand.gitHubResponseReceived(.success(repositories: [], nextURL: nil)))
+                if query.searchText.isEmpty {
+                    return Signal.just(GitHubCommand.gitHubResponseReceived(.success((repositories: [], nextURL: nil))))
                 }
 
-                guard let nextURL = nextURL else {
-                    return Driver.empty()
+                guard let nextURL = query.nextURL else {
+                    return Signal.empty()
                 }
 
                 return performSearch(nextURL)
-                    .asDriver(onErrorJustReturn: .failure(GitHubServiceError.networkError))
+                    .asSignal(onErrorJustReturn: .failure(GitHubServiceError.networkError))
                     .map(GitHubCommand.gitHubResponseReceived)
             }
-    }
+    )
 
     // this is degenerated feedback loop that doesn't depend on output state
-    let inputFeedbackLoop: (Driver<GitHubSearchRepositoriesState>) -> Driver<GitHubCommand> = { state in
+    let inputFeedbackLoop: (Driver<GitHubSearchRepositoriesState>) -> Signal<GitHubCommand> = { state in
         let loadNextPage = loadNextPageTrigger(state).map { _ in GitHubCommand.loadMoreItems }
         let searchText = searchText.map(GitHubCommand.changeSearch)
 
-        return Driver.merge(loadNextPage, searchText)
+        return Signal.merge(loadNextPage, searchText)
     }
 
     // Create a system with two feedback loops that drive the system
     // * one that tries to load new pages when necessary
     // * one that sends commands from user input
-    return Driver.system(GitHubSearchRepositoriesState.initial,
-                         accumulator: GitHubSearchRepositoriesState.reduce,
-                         feedback: searchPerformerFeedback, inputFeedbackLoop)
-}
-
-func == (
-        lhs: (searchText: String, shouldLoadNextPage: Bool, nextURL: URL?),
-        rhs: (searchText: String, shouldLoadNextPage: Bool, nextURL: URL?)
-    ) -> Bool {
-    return lhs.searchText == rhs.searchText
-        && lhs.shouldLoadNextPage == rhs.shouldLoadNextPage
-        && lhs.nextURL == rhs.nextURL
+    return Driver.system(
+        initialState: GitHubSearchRepositoriesState.initial,
+        reduce: GitHubSearchRepositoriesState.reduce,
+        feedback: searchPerformerFeedback, inputFeedbackLoop
+    )
 }
 
 extension GitHubSearchRepositoriesState {

@@ -7,10 +7,8 @@
 //
 
 import CoreLocation
-#if !RX_NO_MODULE
-    import RxSwift
-    import RxCocoa
-#endif
+import RxSwift
+import RxCocoa
 
 class GeolocationService {
     
@@ -39,6 +37,8 @@ class GeolocationService {
                 switch $0 {
                 case .authorizedAlways:
                     return true
+                case .authorizedWhenInUse:
+                    return true    
                 default:
                     return false
                 }

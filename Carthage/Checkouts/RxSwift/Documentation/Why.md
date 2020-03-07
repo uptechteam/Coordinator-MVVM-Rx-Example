@@ -138,7 +138,7 @@ Writing all of this and properly testing it would be tedious. This is that same 
 
 ```swift
 searchTextField.rx.text
-    .throttle(0.3, scheduler: MainScheduler.instance)
+    .throttle(.milliseconds(300), scheduler: MainScheduler.instance)
     .distinctUntilChanged()
     .flatMapLatest { query in
         API.getSearchResults(query)
@@ -169,7 +169,7 @@ This is how we can do it using Rx:
 ```swift
 // this is a conceptual solution
 let imageSubscription = imageURLs
-    .throttle(0.2, scheduler: MainScheduler.instance)
+    .throttle(.milliseconds(200), scheduler: MainScheduler.instance)
     .flatMapLatest { imageURL in
         API.fetchImage(imageURL)
     }
@@ -242,7 +242,7 @@ So what are some practical examples?
 What if you need to create your own observable? It's pretty easy. This code is taken from RxCocoa and that's all you need to wrap HTTP requests with `URLSession`
 
 ```swift
-extension URLSession {
+extension Reactive where Base: URLSession {
     public func response(request: URLRequest) -> Observable<(Data, HTTPURLResponse)> {
         return Observable.create { observer in
             let task = self.base.dataTask(with: request) { (data, response, error) in
