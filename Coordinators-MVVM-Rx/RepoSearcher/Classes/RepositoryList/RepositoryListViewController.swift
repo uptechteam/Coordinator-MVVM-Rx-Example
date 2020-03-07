@@ -45,7 +45,7 @@ class RepositoryListViewController: UIViewController, StoryboardInitializable {
         viewModel.repositories
             .observeOn(MainScheduler.instance)
             .do(onNext: { [weak self] _ in self?.refreshControl.endRefreshing() })
-            .bind(to: tableView.rx.items(cellIdentifier: "RepositoryCell", cellType: RepositoryCell.self)) { [weak self] (_, repo, cell) in
+            .bind(to: tableView.rx.items(cellIdentifier: "RepositoryCell", cellType: RepositoryCell.self)) { _, repo, cell in
                 cell.selectionStyle = .none
                 cell.setName(repo.name)
                 cell.setDescription(repo.description)
